@@ -20,7 +20,7 @@ Example: python2.7 pocket_matrix7.py 1L2T_ATP_A_1301.pdb 1TF7_ATP_A_1901.pdb
 >This module only report two things, i) residue-residue correspondence and ii) M-scores for all input pairs. It doesn't output the newly aligned coordinates. However, if a user is interested to see the translated coordinated of multiple alignment in a graphics viewer such as Pymol, we recommend them to use pairwise alignment code. 
 
 
-###### All required files and scripts for this mode can be found in the directory 'MulitpleSiteAlignment'
+###### All required files and scripts for this mode can be found in the directory 'MultipleSiteAlignment'
 
 ---
 

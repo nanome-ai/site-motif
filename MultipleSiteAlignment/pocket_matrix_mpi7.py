@@ -1111,6 +1111,7 @@ def s1(dic1_s2, res_dic):
 
 	print('Hello')
 	if rank == 0:
+		breakpoint()
 		if len(arr) < 1:
 			print("\nYour job is completed!!!\n")
 			MPI.COMM_WORLD.Abort()
@@ -1147,7 +1148,7 @@ def s1(dic1_s2, res_dic):
 			for line in else_arr:
 				ls = line.split("ttt")
 				start_time = time.time()
-				#print(ls[0], ls[1])
+				# print(ls[0], ls[1])
 				else_ans1 = 'SiteError'
 				try:
 					else_ans1 = MainCode(ls[3], ls[4])
@@ -1164,13 +1165,5 @@ def s1(dic1_s2, res_dic):
 			#print('break got')
 			if len(else_arr) < 9:
 				break	
-		
-		
-
 
 s1(dic1_s2, res_dic)
-
-
-
-
-
