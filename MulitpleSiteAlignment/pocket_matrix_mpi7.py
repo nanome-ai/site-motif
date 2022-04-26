@@ -1,13 +1,9 @@
 import os
-import shutil
 import sys
-from collections import defaultdict, Counter, deque
-import random
+from collections import defaultdict, Counter,
 import math
 import re
-from itertools import permutations
 import mpi4py
-#mpi4py.rc.recv_mprobe = False
 from mpi4py import MPI
 import time
 import copy
@@ -34,10 +30,8 @@ if len(sys.argv) == 4:
 	pdb_res_no_fil = sys.argv[3]
 
 else:
-	print "python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> "
+	print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
 	sys.exit()
-
-
 
 
 def PairWise(res, coord):
@@ -55,7 +49,7 @@ def PairWise(res, coord):
 				ans_ca = math.sqrt(pow(( x_ca - x1_ca ),2) + pow(( y_ca - y1_ca ),2) + pow(( z_ca - z1_ca ),2))
 				ans_cb = math.sqrt(pow(( x_cb - x1_cb ),2) + pow(( y_cb - y1_cb ),2) + pow(( z_cb - z1_cb ),2))
 				ans_cn = math.sqrt(pow(( x_cn - x1_cn ),2) + pow(( y_cn - y1_cn ),2) + pow(( z_cn - z1_cn ),2))
-				#print res[i], res[j], ans_ca, ans_cb, ans_cn
+				#print(res[i], res[j], ans_ca, ans_cb, ans_cn)
 				#time.sleep(1)
 				arr.append( [res[i], res[j], ans_ca, ans_cb, ans_cn] )
 	return arr			
@@ -66,12 +60,12 @@ def center_residues(arr, coord):
 	dic = {1:"   ", 2:"  ", 3:" ", 4:""}
 	brr = []
 	for i in range(len(arr)):
-		#print arr[i]
+		#print(arr[i])
 		j = [ "%.3f"%j for j in coord[i]]
 		val = ''.join([ dic[len(k.split(".")[0])]+k for k in j ])
-		#print val
+		#print(val)
 		brr.append(arr[i][:30]+val+arr[i][54:])
-		#print '\n' # j[:30]+i+j[54:]
+		#print('\n' # j[:30]+i+j[54:])
 		#time.sleep(1)
 	return brr
 
@@ -89,17 +83,17 @@ def file_process(arr):
 	whole_dic = {}
 	h_dic = {"H":0}
 	brr, het_arr, coord = [], [], []
-	#print '\n\n\n\n'
-	#print len(whole_dic)
+	#print('\n\n\n\n')
+	#print(len(whole_dic))
 	for i in arr:
 		i = i.strip()
-		#print i
+		#print(i)
 		if i[:4] == "ATOM":
 			if i[74:78].strip() not in h_dic:
 				var = i[13:16].strip()+" "+i[17:26].strip()
 				#var = i[13:16].strip()+" "+i[17:26].strip()
 				
-				#print var
+				#print(var)
 				#time.sleep(.1)
 				if var not in whole_dic:
 					whole_dic[var] = 0
@@ -120,9 +114,9 @@ def file_process(arr):
 	for line in brr:
 		if line[:4] == "ATOM":
 			val = line[17:20]+'-'+line[21:22]+'-'+line[22:26].strip()
-			#print line, val
+			#print(line, val)
 			#if val == 'THR-A-70':
-			#	print line
+			#	print(line)
 			dic1[val].append([line[28:38].strip(), line[38:46].strip(), line[46:54].strip()])
 			dic2[val].append(line[13:16].strip())
 			
@@ -130,7 +124,7 @@ def file_process(arr):
 
 	res, coord1 = [], []
 	for i,j in dic2.items():
-		#print i,' is i'
+		#print(i,' is i')
 		coord = np.asarray(dic1[i], dtype='float')
 		
 		cn = np.mean(coord, axis=0)
@@ -147,7 +141,7 @@ def file_process(arr):
 					cb = coord[j1]
 				if j[j1] == 'CA':
 					ca = coord[j1]	
-					#print j1, coord[j1]
+					#print(j1, coord[j1])
 
 		res.append(i)
 		if len(coord1) == 0:
@@ -197,25 +191,25 @@ def compare_matrices(mat1, mat2):
 
 def CheckDistance(S1, S2, v1, v2):
 	#S1, S2 = S1[1:], S2[1:]
-	#print 
+	#print()
 	#if res_dic1[v1] == res_dic2[v2]::
 	if compare_matrices(res_dic1[v1], res_dic2[v2]):
 		v1a = v1.split(' ')[1]
 		v2a = v2.split(' ')[1]
-		#print (S1, S2)
-		#print (v1, v2,'---')
+		#print((S1, S2))
+		#print((v1, v2,'---'))
 		for i in zip(S1, S2):
 			p1, p2 = i
 			p1 = p1.split(' ')[1]
 			p2 = p2.split(' ')[1]
-			#print (res_dic1)
-			#print (S1,S2)
+			#print((res_dic1))
+			#print((S1,S2))
 			#time.sleep(1)
 			if p1 == v1a or p2 == v2a:
 				return False
 			if not compare_matrices(res_dic1[p1+' '+v1a], res_dic2[p2+' '+v2a]):
 				return False
-			#print (p1, p2, v1a, v2a)
+			#print((p1, p2, v1a, v2a))
 		return True
 		
 	else:
@@ -230,16 +224,16 @@ def Recursion(res_pair1, sequence):
 			#if res_dic1[res_pair1] == res_dic2[i]:
 			#print(res_pair1)
 			if compare_matrices(res_dic1[res_pair1], res_dic2[i]):
-				#print (i, res_dic1[res_pair1], res_dic2[i] )
+				#print((i, res_dic1[res_pair1], res_dic2[i] ))
 				return res_pair1, i, 'First'
 		return None, None, 'First'
 		
 	else:
 		#print('\nelse--', res_pair1, sequence)
-		#print (res_pair1, sequence)
+		#print((res_pair1, sequence))
 		res1a, res1b = res_pair1.split(' ')
 		res2a, res2b = sequence.split(' ')
-		#print (res_pair1,' <__> ', sequence)
+		#print((res_pair1,' <__> ', sequence))
 		for i in res_pairs_dic1[res1b]:
 			if i != res1a and i not in dic_single1:
 				for j in res_pairs_dic2[res2b]:
@@ -248,29 +242,29 @@ def Recursion(res_pair1, sequence):
 						#Check = CheckDistance(SequenceArrays1, SequenceArrays2, [[res1b],[i]], [[res2b],[j]])
 						if Check:
 							if i+'\t'+j not in dic_pair_captch:
-								#print i,res1b,'---',dic_single1
+								#print(i,res1b,'---',dic_single1)
 								seq1 = ' '.join(SequenceArrays1)+' '+res1b+' '+i
 								seq2 = ' '.join(SequenceArrays2)+' '+res2b+' '+j
-								#print (seq1,'----')
+								#print((seq1,'----'))
 								if seq1+'\t'+seq2 not in dic_whole:	 
-									#print (res1b+' '+i, res2b+' '+j,' ekse out')
+									#print((res1b+' '+i, res2b+' '+j,' ekse out'))
 									return res1b+' '+i, res2b+' '+j, 'Next'
-								#print (i,j,'---')
+								#print((i,j,'---'))
 								
 		return None, None, 'Next'
 		
 		
 		
 def SortedArr():
-	#print SequenceArrays1
-	#print SequenceArrays2
+	#print(SequenceArrays1)
+	#print(SequenceArrays2)
 	return True
 	arr = [ i[0].split(' ')[1]+' '+i[1].split(' ')[1] for i in zip(SequenceArrays1, SequenceArrays2) ]
 	arr = sorted(arr)
 	if len(arr) < 100: # return False for sensitive cases
 		return True
 	arr = '_'.join(arr)
-	#print arr
+	#print(arr)
 	#time.sleep(11)
 	if arr not in SortedArrDic:
 		SortedArrDic[arr] = 0
@@ -328,11 +322,11 @@ def run():
 	for i in res_arr1:
 		if BreakLoop:
 			break
-		#print '\n\n\n\n\n',i,'+++++++'
+		#print('\n\n\n\n\n',i,'+++++++')
 		#if i.split(' ')[0] != 'ARG-A-97': # 'ARG-A-97 TRP-A-41':
 		#if i == 'ARG-A-97 TRP-A-41':
 				#pass
-		#print (i,' starting i --')
+		#print((i,' starting i --'))
 		ans = 'start'
 		SequenceArrays1, SequenceArrays2 = [], []
 		dic_loop1, dic_loop2 = {}, {}
@@ -342,23 +336,23 @@ def run():
 		InitiateFirstBreak = False
 		ObtainedCount = 0
 		#SortedArrDic = {}
-		#print 'NExt Loop\n\n'
+		#print('NExt Loop\n\n')
 		while True:
 			dic_pair_captch = {}
-			#print 'aa'
-			#print ans,'--\n'
+			#print('aa')
+			#print(ans,'--\n')
 			#time.sleep(1)
 			#if not ans:
 			#	time.sleep(11)
 			#	break
-			#print InitiateFirstBreak
+			#print(InitiateFirstBreak)
 			if ans != 'start':
 				if not SequenceArrays1:
 					break
 			if InitiateFirstBreak:
 				#break
 				#start1 = time.time()
-				#print 'CAME'
+				#print('CAME')
 				#print(SequenceArrays1,'hh', ObtainedCount)
 				#time.sleep(1)
 				if not SequenceArrays1:
@@ -380,44 +374,44 @@ def run():
 						
 						seq1 = ' '.join(SequenceArrays1)
 						seq2 = ' '.join(SequenceArrays2)
-						#print (SequenceArrays1, SequenceArrays2)
+						#print((SequenceArrays1, SequenceArrays2))
 						dic_whole[seq1+'\t'+seq2] = 0
 						for j in zip(SequenceArrays1, SequenceArrays1):
-							#print j
+							#print(j)
 							#time.sleep(1)
 							dic_whole[j[0]+'\t'+j[1]] = 0
 						
 					break
 				'''	
 				ObtainedCount = 0
-				#print 'Came End'
+				#print('Came End')
 				#print(SequenceArrays1, SequenceArrays2, len(SequenceArrays1))
 				SequenceArrays1, SequenceArrays2, i1, ans = PairNext(copy.deepcopy(SequenceArrays1), copy.deepcopy(SequenceArrays2))	
 				if not i1:
 					break
 				SequenceArrays1.append(i1)
 				SequenceArrays2.append(ans)
-				#print (SequenceArrays1, SequenceArrays2,'\n')
+				#print((SequenceArrays1, SequenceArrays2,'\n'))
 				#time.sleep(11)
-				#print SortedArr()
-				#print '_________'
+				#print(SortedArr())
+				#print('_________')
 				for j in zip(SequenceArrays1, SequenceArrays2):
 					dic_pair_captch[j[0].split(' ')[0]+'\t'+j[1].split(' ')[0]] = 0
 
 				i = i1
 				
 				#end1 = time.time()
-				#print end1-start1
+				#print(end1-start1)
 			
 			while True:
 				
 				if not ans:
 					break
 				i, ans, CheckPoint = Recursion(i, ans)
-				#print (i, ans, 'Obtained Pairs')
+				#print((i, ans, 'Obtained Pairs'))
 				ObtainedCount += 1
 				if not ans:
-					#print 'break called'
+					#print('break called')
 					break
 				if i+'\t'+ans in dic_whole:
 					break	
@@ -427,25 +421,25 @@ def run():
 				dic_single2[ans.split(' ')[0]] = 0
 				#dic_pair_captch[i.split(' ')[1]+'\t'+ans.split(' ')[1]] = 0
 				dic_pair_captch[i.split(' ')[0]+'\t'+ans.split(' ')[0]] = 0
-				#print (dic_pair_captch)
+				#print((dic_pair_captch))
 				SequenceArrays1.append(i)	
 				SequenceArrays2.append(ans)	
 
 			if not SortedArr():
 				BreakLoop = True
 				#BreakLoop = False
-				#print SequenceArrays2
-				#print SequenceArrays1
-				#print 'False Detected'
+				#print(SequenceArrays2)
+				#print(SequenceArrays1)
+				#print('False Detected')
 				#time.sleep(11)
 			seq1 = ' '.join(SequenceArrays1)
 			seq2 = ' '.join(SequenceArrays2)
-			#print (SequenceArrays1, SequenceArrays2)
-			#print '\n'
+			#print((SequenceArrays1, SequenceArrays2))
+			#print('\n')
 			#time.sleep(.1)
-			#print 'Enter dic', seq1, seq2
+			#print('Enter dic', seq1, seq2)
 			dic_whole[seq1+'\t'+seq2] = 0
-			#print dic_whole
+			#print(dic_whole)
 			Final1.append(SequenceArrays1)
 			Final2.append(SequenceArrays2)
 	return Final1, Final2
@@ -456,14 +450,14 @@ def run():
 def process_hits(Final1, Final2):
 	arr = []
 	for i in zip(Final1, Final2):
-		#print (i, len(i[0]))
+		#print((i, len(i[0])))
 		arr.append([i[0], i[1], len(i[0])])
 
 	arr = sorted(arr, key = lambda x:int(x[2]), reverse=True)
 	NewArr = []
 	for i in arr:
 		if int(i[2]) > 3:
-			#print i
+			#print(i)
 			#time.sleep(11)
 			val1 = [ j.split(' ')[1] for j in i[0][:-1] ]
 			val2 = [ j.split(' ')[1] for j in i[1][:-1] ]
@@ -475,7 +469,7 @@ def process_hits(Final1, Final2):
 				val1 = [ j.split(' ')[1] for j in i[0][:-1] ]
 				val2 = [ j.split(' ')[1] for j in i[1][:-1] ]
 				if res_dic1[' '.join(val1)][2] < 4:
-					#print res_dic1[' '.join(val1)][2],'0000', val1, val2
+					#print(res_dic1[' '.join(val1)][2],'0000', val1, val2)
 					NewArr.append([val1, val2, len(val1)])	
 	'''
 	NewArray = []
@@ -486,8 +480,8 @@ def process_hits(Final1, Final2):
 		check = True
 		for j in NewArray:
 			dic = { j[0][k]+' '+j[1][k]:0 for k in range(len(j[0])) }
-			#print j
-			#print [ j[0][k]+' '+j[1][k] for k in range(len(j[0])) ]
+			#print(j)
+			#print([ j[0][k]+' '+j[1][k] for k in range(len(j[0])) ])
 			#time.sleep(11)
 			dic_count = sum([ 1 for k in range(len(i[0])) if i[0][k]+' '+i[1][k] in dic  ])
 			if dic_count == len(j[0]):
@@ -535,7 +529,7 @@ def kabsch(P, Q, check):
     V, S, W = np.linalg.svd(C)
     d = (np.linalg.det(V) * np.linalg.det(W)) < 0.0
     if d:
-        #print "reflection detected"
+        #print("reflection detected")
         S[-1] = -S[-1]
         V[:, -1] = -V[:, -1]
     # Create Rotation matrix U
@@ -659,7 +653,7 @@ def dihedral1(aa1, aa2):
 def SiteGen():
 	arr = copy.deepcopy(B_all) 
 	minim = []   
-	#print len(site2_coord)
+	#print(len(site2_coord))
 	ans_dic = defaultdict(list)
 	for i in range(0, len(arr)):
 		info1, name1 = pdb1_res_info[i]
@@ -676,7 +670,7 @@ def SiteGen():
 					ans = math.sqrt(x_ans + y_ans + z_ans)
 					minim.append(ans)
 					if ans < 1.25:
-						#print info1, info2
+						#print(info1, info2)
 						ans_dic[info1].append(info2)
 	
 	
@@ -688,24 +682,24 @@ def SiteGen():
 	for i in range(0, len(arr)):
 		info, name = pdb1_res_info[i]
 		#if info == 'THR-A-70':
-		#	print info, name, 'inner'
+		#	print(info, name, 'inner')
 		#	time.sleep(.1)
 		dic_cent[info].append(arr[i])
 		if name == "CA":
 			dic_ca[info].append(arr[i])
 		if name == "N":	
-			#print info, name, np.asarray(arr[i])[0]
+			#print(info, name, np.asarray(arr[i])[0])
 			dic_n[info].append(arr[i])
 			#if info == 'THR-A-70':
 			
-			#	print arr[i],'---'
+			#	print(arr[i],'---')
 			#	time.sleep(11)
 	for i in dic_cent.items():
-		#print i[0], dic_n[i[0]], dic_n[i[0]][0]
+		#print(i[0], dic_n[i[0]], dic_n[i[0]][0])
 		arr1_dihedral_dic[i[0]+"_CN"] = np.mean(i[1], axis=0)
 		arr1_dihedral_dic[i[0]+"_CA"] = np.asarray(dic_ca[i[0]])[0]
 		arr1_dihedral_dic[i[0]+"_N"] = np.asarray(dic_n[i[0]])[0]		
-	#print dic_n['THR-A-70']		
+	#print(dic_n['THR-A-70']		)
 	#time.sleep(11)
 
 	dic_cent, dic_ca, dic_n = defaultdict(list), defaultdict(list), defaultdict(list)
@@ -719,8 +713,8 @@ def SiteGen():
 		
 
 	for i in dic_cent.items():
-		#print i
-		#print i[0],dic_n[i[0]],'---'
+		#print(i)
+		#print(i[0],dic_n[i[0]],'---')
 		arr2_dihedral_dic[i[0]+"_CN"] = np.mean(i[1], axis=0)
 		arr2_dihedral_dic[i[0]+"_CA"] = np.asarray(dic_ca[i[0]])[0]
 		arr2_dihedral_dic[i[0]+"_N"] = np.asarray(dic_n[i[0]])[0]		
@@ -732,7 +726,7 @@ def SiteGen():
 		dihed_factor.append(dihed_val)
 		if dihed_val > 245:
 			arr.append([i[0]+" "+Counter(i[1]).most_common(1)[0][0]])
-			#print arr[-1]
+			#print(arr[-1])
 		site_check_sum1.append(residue_pairs_dictionary[i[0][:3]][Counter(i[1]).most_common(1)[0][0][:3]])
 
 	site_check_sum1 = sum(site_check_sum1)*sum(dihed_factor)		
@@ -741,7 +735,7 @@ def SiteGen():
     
 def SiteGen1(arr):
 	
-	#print len(arr), len(site1a), len(site2a)
+	#print(len(arr), len(site1a), len(site2a))
 	arr1 = []
 	dic = {1:"   ", 2:"  ", 3:" ", 4:""}
 	for i in arr:
@@ -749,16 +743,16 @@ def SiteGen1(arr):
 		for j in i:
 			j1 = "%.3f"%j
 			var += dic[len(j1.split(".")[0])]+j1
-		#print var	
-		#print i
-		#print var
+		#print(var	)
+		#print(i)
+		#print(var)
 		#time.sleep(1)
 		arr1.append(var)
 	#for i in zip(arr,arr1):
-	#	print i
+	#	print(i)
 	
 	out = open("frag.pdb", 'w')
-	#print len(arr1), len(site1a),' ---'
+	#print(len(arr1), len(site1a),' ---')
 	for i1 in range(len(arr1)):
 		i = arr1[i1]
 		j = site1a[i1]
@@ -774,11 +768,11 @@ def SiteGen1(arr):
 def site_gen_het(site_gen_het):
 	dic1, dic2 = {}, {}
 	out = open("align", 'w')
-	#print site_gen_het,'-----'
+	#print(site_gen_het,'-----')
 	for i in site_gen_het:
-		#print i
+		#print(i)
 		i1 = i[0].split(" ")
-		#print i
+		#print(i)
 		out.write(i1[1]+" "+i1[0]+"\n")
 		dic1[i1[0]] = 0
 		dic2[i1[1]] = 0
@@ -791,7 +785,7 @@ def site_gen_het(site_gen_het):
 		for j in i:
 			j1 = "%.3f"%j
 			var += dic[len(j1.split(".")[0])]+j1
-		#print var	
+		#print(var	)
 		arr1.append(var)
 
 
@@ -799,24 +793,24 @@ def site_gen_het(site_gen_het):
 	for i1 in range(0, len(arr1)):
 		i = arr1[i1]
 		j = site1a[i1]
-		#print i,j
+		#print(i,j)
 		if j[:4] == "ATOM":
 			res_info = j[17:20]+"-"+j[21:22]+"-"+j[22:26].strip()
-			#print res_info
+			#print(res_info)
 			if res_info in dic1:
-				#print j
+				#print(j)
 				out.write(j[:30]+i+j[54:]+"\n")
 		else:	
 			out.write(j[:30]+i+j[54:]+"\n")
 	out.close()	
-	#print site1a
+	#print(site1a)
 	out = open("site2.pdb", 'w')
 	for i in site2a:
 		if i[:4] == "ATOM":
 			res_info = i[17:20]+"-"+i[21:22]+"-"+i[22:26].strip()
-			#print i, res_info
+			#print(i, res_info)
 			if res_info in dic2:
-				#print i, res_info
+				#print(i, res_info)
 				out.write(i+"\n")
 		else:	
 			out.write(i+"\n")
@@ -829,13 +823,13 @@ def print_scores(arr):
 	min_max, min_max2 = 0, []
 	fin_val = ""
 	for i in arr:
-		#print i,' i1'
+		#print(i,' i1')
 		i1, i2 = i[0].split(' ')
-		#print i
+		#print(i)
 		res1.append(i2)
 		res2.append(i1)
 		i1, i2 = i1[:3], i2[:3]
-		#print residue_pairs_dictionary[i1][i2],"ass",i1,i2
+		#print(residue_pairs_dictionary[i1][i2],"ass",i1,i2)
 		summer.append(residue_pairs_dictionary[i1][i2])
 		control1.append(residue_pairs_dictionary[i1][i1])
 		control2.append(residue_pairs_dictionary[i2][i2])
@@ -847,12 +841,12 @@ def print_scores(arr):
 	summer = float(sum(summer))
 	if len(control1) == 0 or len(control2) == 0:
 		return 'No Score'
-	#print summer, control1, control2,"asaa"
+	#print(summer, control1, control2,"asaa")
 	blosum_score = summer/((sum(control1)/2)+(sum(control2)/2))
-	#print sum(control2)/2	
-	#print np.mean(control)	
-	#print control1, control2
-	#print str(len(res1))+"/"+str(pdb1_ln)
+	#print(sum(control2)/2	)
+	#print(np.mean(control)	)
+	#print(control1, control2)
+	#print(str(len(res1))+"/"+str(pdb1_ln))
 	fin_val = str(len(res1))+"/"+str(pdb1_ln)+" "+str(len(res2))+"/"+str(pdb2_ln)+" "+str(float(min_max)/min(min_max2))+" "+str(float(min_max)/max(min_max2))+\
 	" "+str(blosum_score)
 	return fin_val  
@@ -877,8 +871,8 @@ def MainCode(aline, bline):
 	if not NewArray:
 		return 'None\tNone'
 		#sys.exit()
-	#print pdb1_lines[:3]
-	#print pdb1_het_lines[:3]
+	#print(pdb1_lines[:3])
+	#print(pdb1_het_lines[:3])
 	#time.sleep(11)
 	# Note bring coordinate to center befroe doing any opertation
 	
@@ -892,7 +886,7 @@ def MainCode(aline, bline):
 			pdb1_res_info.append([ res1, line[13:16].strip() ])
 			pdb1_generated_coord.append(line)
 			#if res1 == 'THR-A-70':
-			#	print res1, line
+			#	print(res1, line)
 			pdb1_trans_coord.append([line[28:38].strip(), line[38:46].strip(), line[46:54].strip()])
 			if line[13:16].strip() == "CA":
 				pdb1_ln += 1
@@ -900,7 +894,7 @@ def MainCode(aline, bline):
 				pdb1_ca_dic[res1].append(line[38:46].strip())
 				pdb1_ca_dic[res1].append(line[46:54].strip())
 		
-	#print 'pdbd2_lines'	
+	#print('pdbd2_lines'	)
 	for line in pdb2_lines:
 		if line[:4] == "ATOM":
 			res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -918,23 +912,23 @@ def MainCode(aline, bline):
 		
 	ResLists = []
 	maxi, index_ln = 0, 0
-	#print NewArray
+	#print(NewArray)
 	NewCount = 0
 	for i in NewArray:
 		site1_arr, site2_arr = [], []
 		site1_coord, site2_coord = copy.deepcopy(pdb1_trans_coord), copy.deepcopy(pdb2_trans_coord)
 		
-		#print i
+		#print(i)
 		for j in range(len(i[0])):
-			#print i[0][j], pdb1_ca_dic[i[0][j]]
-			#print i[0][j], i[1][j]
-			#print pdb1_ca_dic[i[0][j]
+			#print(i[0][j], pdb1_ca_dic[i[0][j]])
+			#print(i[0][j], i[1][j])
+			#print(pdb1_ca_dic[i[0][j])
 			site1_arr.append(pdb1_ca_dic[i[0][j]])
 			site2_arr.append(pdb2_ca_dic[i[1][j]])
-		#print site1_arr	
+		#print(site1_arr	)
 		site1_arr, site2_arr = np.asarray(site1_arr, dtype=float), np.asarray(site2_arr, dtype=float)	
-		#print site1_arr	
-		#print pdb1_trans_coord
+		#print(site1_arr	)
+		#print(pdb1_trans_coord)
 		
 		U = kabsch(copy.deepcopy(site1_arr), copy.deepcopy(site2_arr), True)	
 		B_all = copy.deepcopy(site1_coord)
@@ -973,19 +967,19 @@ def MainCode(aline, bline):
 # MPI CODE START
 
 
-#print rank
+#print(rank)
 #if rank == 0:	
 #out = open("align_output", 'a')
-#print "Detected the ",size," number of processor"
+#print("Detected the ",size," number of processor")
 def pdb_res():
 	res_dic = {}
 	aline = open(pdb_res_no_fil, 'r').readlines()
-	#print pdb_res_no_fil,"  aline"
-	#print aline
+	#print(pdb_res_no_fil,"  aline")
+	#print(aline)
 	for line in aline:
 		line = line.strip()
 		l = line.split("\t")
-		#print l
+		#print(l)
 		res_dic[l[0]] = l[1]
 	return res_dic
 res_dic = pdb_res()
@@ -1010,7 +1004,7 @@ def chunk_mem_mpi(arr1, runnable_rank):
 			new_arr1.append(i)
 	new_arr2 = []
 	for i in new_arr1:
-		#print i
+		#print(i)
 		aline = open(dire+"/"+pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
 		bline = open(dire+"/"+pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
 		ac = ""
@@ -1024,8 +1018,8 @@ def chunk_mem_mpi(arr1, runnable_rank):
 			bc += bl
 			bc += "__"
 		new_arr2.append(i.replace(" ","ttt")+"ttt"+ac[:-2]+"ttt"+bc[:-2])
-		#print new_arr2
-		#print i
+		#print(new_arr2)
+		#print(i)
 	return new_arr2
 	
 def s1(dic1_s2, res_dic):
@@ -1034,7 +1028,7 @@ def s1(dic1_s2, res_dic):
 	for line in aline:
 		line = line.strip()
 		l = line.split("\t")
-		#print line, l[0], l[1]
+		#print(line, l[0], l[1])
 		paired_arr.append(line+"\t"+str(res_dic[l[0]] + res_dic[l[1]] ))
 		
 	paired_arr = sorted(paired_arr, key = lambda x:int(x.split("\t")[2]), reverse=True)
@@ -1050,39 +1044,39 @@ def s1(dic1_s2, res_dic):
 		if i+" "+j not in dic1_s2:
 			arr_count += 1
 			arr.append(i+" "+j)
-			#print '----',rank
+			#print('----',rank)
 			if arr_count == step_size:
 				if rank == 0:
 				#if arr_count == step_size:
 					run_state += 1
-					print "Batch run ",run_state,": has started"
-					#print arr
+					print("Batch run ",run_state,": has started")
+					#print(arr)
 					count = 0
 					arr1 = []
 					for count_i in arr:
-						#print i
+						#print(i)
 						count += 1
-						#print count
+						#print(count)
 						arr1.append(count_i+" "+str(count))
 						if count >= size:
 							count = 0
 					for runnable_rank in range(1,size+1):
 						new_arr1 = []
-						#print runnable_rank
+						#print(runnable_rank)
 						new_arr1 = chunk_mem_mpi(arr1, runnable_rank)
 						comm.send(new_arr1, dest=runnable_rank)
-					#print 'Waitingf Recv'
+					#print('Waitingf Recv')
 					out = open("align_output.txt", 'a+')
 					for gettable_rank in range(1,size+1):
 						ans = comm.recv(source=MPI.ANY_SOURCE)
 						for l2 in ans:
-							#print l2
+							#print(l2)
 							out.write(l2+"\n")
 					time.sleep(.1)
 					out.close()
-					#print len(open('align_output', 'r').readlines())
+					#print(len(open('align_output', 'r').readlines()))
 					time.sleep(.1)
-					print 'done\n'	
+					print('done\n'	)
 					
 
 				elif rank != 0:
@@ -1093,7 +1087,7 @@ def s1(dic1_s2, res_dic):
 						for line in else_arr:
 							ls = line.split("ttt")
 							start_time = time.time()
-							#print ls[0], ls[1]
+							#print(ls[0], ls[1])
 							else_ans1 = 'SiteError'
 							try:
 								else_ans1 = MainCode(ls[3], ls[4])
@@ -1103,11 +1097,11 @@ def s1(dic1_s2, res_dic):
 							
 							end_time = time.time()	
 							l_child = ls[:3]
-							print "Pair ",l_child[0],l_child[1]," is completed from the processor --> ",l_child[2]," in time ",round((end_time-start_time),2)," sec" 
-						#print 'Elif exit'
+							print("Pair ",l_child[0],l_child[1]," is completed from the processor --> ",l_child[2]," in time ",round((end_time-start_time),2)," sec" )
+						#print('Elif exit')
 						comm.send(else_ans,dest=0)
 						#break
-						#print 'break got'
+						#print('break got')
 						if len(else_arr) < 9:
 							break
 						
@@ -1115,16 +1109,16 @@ def s1(dic1_s2, res_dic):
 				arr = []
 				arr_count = 0		
 
-	print 'Hello'
+	print('Hello')
 	if rank == 0:
 		if len(arr) < 1:
-			print "\nYour job is completed!!!\n"
+			print("\nYour job is completed!!!\n")
 			MPI.COMM_WORLD.Abort()
-		print 'exit stage'
+		print('exit stage')
 		arr11 = []
 		count_1 = 0
 		for count_i1 in arr:
-			#print i
+			#print(i)
 			count_1 += 1
 			arr11.append(count_i1+" "+str(count_1))
 			if count_1 >= size:
@@ -1139,7 +1133,7 @@ def s1(dic1_s2, res_dic):
 		for gettable_rank in range(1,size+1):
 			ans = comm.recv(source=MPI.ANY_SOURCE)
 			for l2 in ans:
-				#print l2
+				#print(l2)
 				out.write(l2+"\n")
 		time.sleep(.1)
 		out.close()
@@ -1153,7 +1147,7 @@ def s1(dic1_s2, res_dic):
 			for line in else_arr:
 				ls = line.split("ttt")
 				start_time = time.time()
-				#print ls[0], ls[1]
+				#print(ls[0], ls[1])
 				else_ans1 = 'SiteError'
 				try:
 					else_ans1 = MainCode(ls[3], ls[4])
@@ -1163,11 +1157,11 @@ def s1(dic1_s2, res_dic):
 				
 				end_time = time.time()	
 				l_child = ls[:3]
-				print "Pair ",l_child[0],l_child[1]," is completed from the processor --> ",l_child[2]," in time ",round((end_time-start_time),2)," sec" 
-			#print 'Elif exit'
+				print("Pair ",l_child[0],l_child[1]," is completed from the processor --> ",l_child[2]," in time ",round((end_time-start_time),2)," sec" )
+			#print('Elif exit')
 			comm.send(else_ans,dest=0)
 			#break
-			#print 'break got'
+			#print('break got')
 			if len(else_arr) < 9:
 				break	
 		
