@@ -1,0 +1,4 @@
+fixed_binding_site.pdb	fixed_binding_site.pdb
+fixed_binding_site.pdb	moving_binding_site.pdb
+moving_binding_site.pdb	fixed_binding_site.pdb
+moving_binding_site.pdb	moving_binding_site.pdb
