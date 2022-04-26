@@ -1,13 +1,14 @@
-import os
-import sys
-from collections import defaultdict, Counter
-import math
-import re
-import mpi4py
-from mpi4py import MPI
-import time
 import copy
+import os
+import math
+import mpi4py
 import numpy as np
+import re
+import sys
+import time
+from collections import defaultdict, Counter
+from mpi4py import MPI
+
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 
@@ -16,9 +17,7 @@ size = size - 1
 status = MPI.Status()
 
 '''
-
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
-
 '''
 
 dire = os.getcwd()
@@ -315,12 +314,6 @@ def run():
 
         while True:
             dic_pair_captch = {}
-
-            # time.sleep(1)
-            # if not ans:
-            #	time.sleep(11)
-            #	break
-
             if ans != 'start':
                 if not SequenceArrays1:
                     break
@@ -1068,10 +1061,9 @@ def s1(dic1_s2, res_dic):
 
     print('Hello')
     if rank == 0:
-        breakpoint()
         if len(arr) < 1:
             print("\nYour job is completed!!!\n")
-            MPI.COMM_WORLD.Abort()
+            # MPI.COMM_WORLD.Abort()
         print('exit stage')
         arr11 = []
         count_1 = 0
@@ -1095,7 +1087,7 @@ def s1(dic1_s2, res_dic):
                 out.write(l2+"\n")
         time.sleep(.1)
         out.close()
-        MPI.COMM_WORLD.Abort()
+        # MPI.COMM_WORLD.Abort()
 
     elif rank != 0:
         else_ans = []
