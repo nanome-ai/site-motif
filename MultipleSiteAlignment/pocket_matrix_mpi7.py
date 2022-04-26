@@ -64,9 +64,7 @@ def center_residues(arr, coord):
 	return brr
 
 def file_process(arr):
-
 	'''
-	
 	remove redundancy and h_bond
 	store coordinate
 	1) From whole coordinate -> to centroid
