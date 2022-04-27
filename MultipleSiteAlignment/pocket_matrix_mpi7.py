@@ -90,7 +90,6 @@ def file_process(arr):
             if i[74:78].strip() not in h_dic:
                 var = i[13:16].strip()+" "+i[17:26].strip()
                 #var = i[13:16].strip()+" "+i[17:26].strip()
-
                 # time.sleep(.1)
                 if var not in whole_dic:
                     whole_dic[var] = 0
@@ -227,21 +226,16 @@ def Recursion(res_pair1, sequence):
                         #Check = CheckDistance(SequenceArrays1, SequenceArrays2, [[res1b],[i]], [[res2b],[j]])
                         if Check:
                             if i+'\t'+j not in dic_pair_captch:
-
                                 seq1 = ' '.join(
                                     SequenceArrays1)+' '+res1b+' '+i
                                 seq2 = ' '.join(
                                     SequenceArrays2)+' '+res2b+' '+j
-
                                 if seq1+'\t'+seq2 not in dic_whole:
-
                                     return res1b+' '+i, res2b+' '+j, 'Next'
-
         return None, None, 'Next'
 
 
 def SortedArr():
-
     return True
     arr = [i[0].split(' ')[1]+' '+i[1].split(' ')[1]
            for i in zip(SequenceArrays1, SequenceArrays2)]
@@ -384,6 +378,7 @@ def run():
 
 
 def process_hits(Final1, Final2):
+    logging.info("Starting process_hits()")
     arr = []
     for i in zip(Final1, Final2):
 
@@ -425,6 +420,7 @@ def process_hits(Final1, Final2):
                 break
         if check:
             NewArray.append(i)
+    logging.info("finished process_hits()")
     return NewArray
 
 # END OF MAIN MAPP CODE
@@ -819,6 +815,7 @@ def MainCode(aline, bline):
     pdb2_trans_coord, pdb2_res_info, pdb2_generated_coord, pdb2_ca_dic = [
     ], [], [], defaultdict(list)
     pdb1_ln, pdb2_ln = 0, 0
+    logging.info("Processing pdb1_lines")
     for line in pdb1_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -833,7 +830,8 @@ def MainCode(aline, bline):
                 pdb1_ca_dic[res1].append(line[28:38].strip())
                 pdb1_ca_dic[res1].append(line[38:46].strip())
                 pdb1_ca_dic[res1].append(line[46:54].strip())
-
+    logging.info("Finished pdb1_lines")
+    logging.info("Processing pdb2_lines")
     for line in pdb2_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -847,7 +845,7 @@ def MainCode(aline, bline):
                 pdb2_ca_dic[res1].append(line[28:38].strip())
                 pdb2_ca_dic[res1].append(line[38:46].strip())
                 pdb2_ca_dic[res1].append(line[46:54].strip())
-
+    logging.info("Finished pdb2_lines")
     pdb1_trans_coord = np.asarray(pdb1_trans_coord, dtype='float')
     pdb2_trans_coord = np.asarray(pdb2_trans_coord, dtype='float')
 
@@ -855,6 +853,7 @@ def MainCode(aline, bline):
     maxi, index_ln = 0, 0
 
     NewCount = 0
+    logging.info("looping through NewArray")
     for i in NewArray:
         site1_arr, site2_arr = [], []
         site1_coord, site2_coord = copy.deepcopy(
@@ -883,7 +882,7 @@ def MainCode(aline, bline):
                 NewCount += 1
 
         ResLists.append([new_res_list, score])
-
+    logging.info("Finished looping through NewArray")
     ResLists = sorted(ResLists, key=lambda x: float(x[1]), reverse=True)
     line1 = ResLists[0][0]
     site1_arr, site2_arr = [], []
@@ -894,6 +893,7 @@ def MainCode(aline, bline):
         MAPP_seqs = 'No Match'
 
     # return MAPP_scores+'\t'+MAPP_seqs
+    logging.debug("finishing MainCode()")
     return MAPP_scores+'\t'+MAPP_seqs
 
 # MPI CODE START
@@ -969,20 +969,18 @@ def s1(dic1_s2, res_dic):
 
     arr = []
     arr_count = 0
-    step_size = size * 2  # how many pairs to batch into each process
+    step_size = size * 10  #  math.ceil(len(paired_arr)/size)  # how many pairs to batch into each process
     run_state = 0
     #j = j1.split("\t")[0]
-
     for i1 in paired_arr:
         i, j, _ = i1.split("\t")
         if i+" "+j not in dic1_s2:
             arr_count += 1
             arr.append(i+" "+j)
-
-            if arr_count == step_size:
+            if arr_count == step_size or arr_count == len(paired_arr):
                 if rank == 0:
                     run_state += 1
-                    print("Batch run ", run_state, ": has started")
+                    logging.info(f"Batch run {run_state} has started")
 
                     count = 0
                     arr1 = []
@@ -1024,6 +1022,7 @@ def s1(dic1_s2, res_dic):
                             try:
                                 else_ans1 = MainCode(ls[3], ls[4])
                             except:
+                                raise
                                 pass
                             else_ans.append(ls[0]+"\t"+ls[1]+"\t"+else_ans1)
 

@@ -1,4 +1,4 @@
-data_folder=MultipleSiteAlignment/$1
+data_folder=$1
 pairs_list="$(pwd)/PairList.txt"
 pdb_sizes="$(pwd)/PDBSize.txt"
 echo "Running on $1"
