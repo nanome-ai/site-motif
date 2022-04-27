@@ -1,4 +1,5 @@
 import copy
+import logging
 import os
 import math
 import mpi4py
@@ -9,13 +10,14 @@ import time
 from collections import defaultdict, Counter
 from mpi4py import MPI
 
+logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
-
-size = comm.Get_size()
-size = size - 1
+size = comm.Get_size() - 1
 status = MPI.Status()
-
+logging.debug(f"rank={rank}")
+logging.debug(f"size={size}")
 '''
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
 '''
@@ -34,6 +36,7 @@ else:
 
 
 def PairWise(res, coord):
+    logging.debug("running PairWise")
     arr = []
     for i in range(len(res)):
         x_ca, y_ca, z_ca = coord[i][0]
@@ -75,6 +78,7 @@ def file_process(arr):
     3) CA
 
     '''
+    logging.debug("running file_process")
     whole_dic = {}
     h_dic = {"H": 0}
     brr, het_arr, coord = [], [], []
@@ -286,36 +290,29 @@ def PairNext(S1, S2):
 
 
 def run():
-
     global dic_single1, dic_single2, SequenceArrays1, SequenceArrays2, dic_pair_captch, dic_whole
-
-    dic_loop1, dic_loop2 = {}, {}
     Final1, Final2 = [], []
     BreakLoop = False
 
-    dic_whole, SortedArrDic = {}, {}
+    dic_whole = {}
     for i in res_arr1:
+        logging.debug(f"checking {i}")
         if BreakLoop:
             break
 
-        # if i.split(' ')[0] != 'ARG-A-97': # 'ARG-A-97 TRP-A-41':
-        # if i == 'ARG-A-97 TRP-A-41':
-            # pass
-
         ans = 'start'
         SequenceArrays1, SequenceArrays2 = [], []
-        dic_loop1, dic_loop2 = {}, {}
         dic_single1, dic_single2 = {}, {}
 
         # add two nested while loops
         InitiateFirstBreak = False
         ObtainedCount = 0
-        #SortedArrDic = {}
 
         while True:
             dic_pair_captch = {}
             if ans != 'start':
                 if not SequenceArrays1:
+                    # logging.debug("break")
                     break
             if InitiateFirstBreak:
                 # break
@@ -323,43 +320,26 @@ def run():
 
                 # time.sleep(1)
                 if not SequenceArrays1:
+                    # logging.debug("SequenceArrays1 empty, breaking")
                     break
                 if ObtainedCount <= 1:
+                    # logging.debug("ObtainedCount <= 1, breaking")
                     break
-
-                # time.sleep(11)
 
                 if len(SequenceArrays1) <= 2:
                     seq1 = ' '.join(SequenceArrays1)
                     seq2 = ' '.join(SequenceArrays2)
                     dic_whole[seq1+'\t'+seq2] = 0
+                    # logging.debug("Sequencearrays1 <= 2, breaking")
                     break
-
-                '''
-				if len(SequenceArrays1) <= 1:
-					if SequenceArrays1:
-						
-						seq1 = ' '.join(SequenceArrays1)
-						seq2 = ' '.join(SequenceArrays2)
-						
-						dic_whole[seq1+'\t'+seq2] = 0
-						for j in zip(SequenceArrays1, SequenceArrays1):
-							
-							#time.sleep(1)
-							dic_whole[j[0]+'\t'+j[1]] = 0
-						
-					break
-				'''
                 ObtainedCount = 0
-
                 SequenceArrays1, SequenceArrays2, i1, ans = PairNext(
                     copy.deepcopy(SequenceArrays1), copy.deepcopy(SequenceArrays2))
                 if not i1:
+                    # logging.debug("not i1, breaking")
                     break
                 SequenceArrays1.append(i1)
                 SequenceArrays2.append(ans)
-
-                # time.sleep(11)
 
                 for j in zip(SequenceArrays1, SequenceArrays2):
                     dic_pair_captch[j[0].split(
@@ -368,16 +348,16 @@ def run():
                 i = i1
                 #end1 = time.time()
             while True:
-
                 if not ans:
+                    # logging.debug("no ans, breaking")
                     break
                 i, ans, CheckPoint = Recursion(i, ans)
-
                 ObtainedCount += 1
                 if not ans:
-
+                    # logging.debug("no ans after recursion, breaking")
                     break
                 if i+'\t'+ans in dic_whole:
+                    # logging.debug("i\tans already in dic_whole, breaking")
                     break
 
                 InitiateFirstBreak = True
@@ -399,6 +379,7 @@ def run():
 
             Final1.append(SequenceArrays1)
             Final2.append(SequenceArrays2)
+    logging.info("Run completed")
     return Final1, Final2
 
 
@@ -806,6 +787,7 @@ def print_scores(arr):
 
 
 def MainCode(aline, bline):
+    logging.debug("Running MainCode!")
     aline = aline.split('__')  # __
     bline = bline.split('__')
     global res_dic1, res_dic2, res_arr1, res_arr2, res_pairs_dic1, res_pair2_dic2
@@ -821,7 +803,9 @@ def MainCode(aline, bline):
     res_arr2, res_dic2, res_pairs_dic2, pdb2_lines, pdb2_het_lines = file_process(
         bline)
     # time.sleep(11)
+    logging.debug("Staring run()")
     Final1, Final2 = run()
+    logging.debug("Finished run()")
     NewArray = process_hits(Final1, Final2)
     if not NewArray:
         return 'None\tNone'
@@ -985,7 +969,7 @@ def s1(dic1_s2, res_dic):
 
     arr = []
     arr_count = 0
-    step_size = size*10  # step_size
+    step_size = size * 2  # how many pairs to batch into each process
     run_state = 0
     #j = j1.split("\t")[0]
 
@@ -997,7 +981,6 @@ def s1(dic1_s2, res_dic):
 
             if arr_count == step_size:
                 if rank == 0:
-                    # if arr_count == step_size:
                     run_state += 1
                     print("Batch run ", run_state, ": has started")
 
@@ -1059,11 +1042,10 @@ def s1(dic1_s2, res_dic):
                 arr = []
                 arr_count = 0
 
-    print('Hello')
     if rank == 0:
         if len(arr) < 1:
             print("\nYour job is completed!!!\n")
-            # MPI.COMM_WORLD.Abort()
+            MPI.COMM_WORLD.Abort()
         print('exit stage')
         arr11 = []
         count_1 = 0
@@ -1082,12 +1064,13 @@ def s1(dic1_s2, res_dic):
         out = open("align_output.txt", 'a+')
         for gettable_rank in range(1, size+1):
             ans = comm.recv(source=MPI.ANY_SOURCE)
+            logging.debug(ans)
             for l2 in ans:
-
                 out.write(l2+"\n")
         time.sleep(.1)
         out.close()
-        # MPI.COMM_WORLD.Abort()
+        breakpoint()
+        MPI.COMM_WORLD.Abort()
 
     elif rank != 0:
         else_ans = []
@@ -1106,8 +1089,12 @@ def s1(dic1_s2, res_dic):
 
                 end_time = time.time()
                 l_child = ls[:3]
-                print("Pair ", l_child[0], l_child[1], " is completed from the processor --> ",
-                      l_child[2], " in time ", round((end_time-start_time), 2), " sec")
+
+                logging.info(
+                    f"""
+                    Pair {l_child[0]} {l_child[1]} is completed from the processor --> 
+                      {l_child[2]} in time {round((end_time-start_time), 2)} sec")"""
+                )
 
             comm.send(else_ans, dest=0)
             # break
