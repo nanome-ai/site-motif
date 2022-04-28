@@ -148,7 +148,6 @@ def file_process(arr):
         dic[i[0]+' '+i[1]].append(i[4])
         arr1.append(i[0]+' '+i[1])
         dic1_pairs[i[0]].append(i[1])
-
     return arr1, dic, dic1_pairs, brr, het_arr
 
 
@@ -177,7 +176,6 @@ def CheckDistance(S1, S2, v1, v2):
             p1 = p1.split(' ')[1]
             p2 = p2.split(' ')[1]
 
-            # time.sleep(1)
             if p1 == v1a or p2 == v2a:
                 return False
             if not compare_matrices(res_dic1[p1+' '+v1a], res_dic2[p2+' '+v2a]):
@@ -195,15 +193,12 @@ def Recursion(res_pair1, sequence):
             # if res_dic1[res_pair1] == res_dic2[i]:
 
             if compare_matrices(res_dic1[res_pair1], res_dic2[i]):
-
                 return res_pair1, i, 'First'
         return None, None, 'First'
 
     else:
-
         res1a, res1b = res_pair1.split(' ')
         res2a, res2b = sequence.split(' ')
-
         for i in res_pairs_dic1[res1b]:
             if i != res1a and i not in dic_single1:
                 for j in res_pairs_dic2[res2b]:
@@ -433,8 +428,8 @@ def kabsch(P, Q, check):
 
 
 def centroid(X):
-    C = X.mean(axis=0)
-    return C
+    centroid = X.mean(axis=0)
+    return centroid
 
 
 def blosum():
@@ -657,7 +652,6 @@ def SiteGen1(arr):
         arr1.append(var)
 
     out = open("frag.pdb", 'w')
-
     for i1 in range(len(arr1)):
         i = arr1[i1]
         j = site1a[i1]
@@ -747,7 +741,7 @@ def print_scores(arr):
 
 
 def MainCode(aline, bline):
-    logging.debug("Running MainCode!")
+    logging.info("MainCode Running!")
     aline = aline.split('__')  # __
     bline = bline.split('__')
     global res_dic1, res_dic2, res_arr1, res_arr2, res_pairs_dic1, res_pair2_dic2
@@ -807,7 +801,6 @@ def MainCode(aline, bline):
                 pdb2_ca_dic[res1].append(line[28:38].strip())
                 pdb2_ca_dic[res1].append(line[38:46].strip())
                 pdb2_ca_dic[res1].append(line[46:54].strip())
-    logging.info("Finished pdb2_lines")
     pdb1_trans_coord = np.asarray(pdb1_trans_coord, dtype='float')
     pdb2_trans_coord = np.asarray(pdb2_trans_coord, dtype='float')
 
@@ -815,7 +808,6 @@ def MainCode(aline, bline):
     maxi, index_ln = 0, 0
 
     NewCount = 0
-    logging.info("looping through NewArray")
     for i in NewArray:
         site1_arr, site2_arr = [], []
         site1_coord, site2_coord = copy.deepcopy(
@@ -844,7 +836,6 @@ def MainCode(aline, bline):
                 NewCount += 1
 
         ResLists.append([new_res_list, score])
-    logging.info("Finished looping through NewArray")
     ResLists = sorted(ResLists, key=lambda x: float(x[1]), reverse=True)
     line1 = ResLists[0][0]
     site1_arr, site2_arr = [], []
@@ -855,19 +846,14 @@ def MainCode(aline, bline):
         MAPP_seqs = 'No Match'
 
     # return MAPP_scores+'\t'+MAPP_seqs
-    logging.debug("finishing MainCode()")
+    logging.info("finishing MainCode()")
     return MAPP_scores+'\t'+MAPP_seqs
 
 # MPI CODE START
 
-# if rank == 0:
-#out = open("align_output", 'a')
-
-
 def pdb_res():
     res_dic = {}
     aline = open(pdb_res_no_fil, 'r').readlines()
-
     for line in aline:
         line = line.strip()
         l = line.split("\t")
@@ -899,9 +885,10 @@ def chunk_mem_mpi(arr1, runnable_rank):
         if int(i.split(" ")[2]) == runnable_rank:
             new_arr1.append(i)
     new_arr2 = []
+    cwd = os.getcwd()
     for i in new_arr1:
-        aline = open(dire+"/"+pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
-        bline = open(dire+"/"+pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
+        aline = open(cwd+"/"+pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
+        bline = open(cwd+"/"+pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
         ac = ""
         bc = ""
         for al in aline:
@@ -923,7 +910,6 @@ def s1(dic1_s2, res_dic):
     for line in aline:
         line = line.strip()
         l = line.split("\t")
-
         paired_arr.append(line+"\t"+str(res_dic[l[0]] + res_dic[l[1]]))
 
     paired_arr = sorted(paired_arr, key=lambda x: int(
@@ -931,7 +917,7 @@ def s1(dic1_s2, res_dic):
 
     arr = []
     arr_count = 0
-    step_size = size * 10  #  math.ceil(len(paired_arr)/size)  # how many pairs to batch into each process
+    step_size = size * 10  # how many pairs to batch into each process
     run_state = 0
     #j = j1.split("\t")[0]
     for i1 in paired_arr:
@@ -1062,6 +1048,5 @@ def s1(dic1_s2, res_dic):
             comm.send(else_ans, dest=0)
             if len(else_arr) < 9:
                 break
-
 
 s1(dic1_s2, res_dic)
