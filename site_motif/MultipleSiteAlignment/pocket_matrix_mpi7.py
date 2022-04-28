@@ -859,17 +859,17 @@ res_dic = pdb_res()
 
 
 def s2():
-    dic1_s2 = {}
+    completed_alignment_dict = {}
     out = open("align_output.txt", 'a+')
     out.close()
     aline = open("align_output.txt", 'r')
     for line in aline:
         line = line.strip()
-        dic1_s2[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
-    return dic1_s2
+        completed_alignment_dict[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
+    return completed_alignment_dict
 
 
-dic1_s2 = s2()
+completed_alignment_dict = s2()
 
 
 def chunk_mem_mpi(arr1, runnable_rank):
@@ -896,8 +896,7 @@ def chunk_mem_mpi(arr1, runnable_rank):
 
     return new_arr2
 
-
-def s1(dic1_s2, res_dic):
+def s1(completed_alignment_dict, res_dic):
     aline = open(paired_list, 'r').readlines()
     paired_arr = []
     for line in aline:
@@ -908,33 +907,29 @@ def s1(dic1_s2, res_dic):
     paired_arr = sorted(paired_arr, key=lambda x: int(
         x.split("\t")[2]), reverse=True)
 
-    arr = []
-    arr_count = 0
+    list_of_file_pairs = []
+    file_pair_count = 0
     step_size = size * 10  # how many pairs to batch into each process
-    run_state = 0
-    #j = j1.split("\t")[0]
-    for i1 in paired_arr:
-        i, j, _ = i1.split("\t")
-        if i+" "+j not in dic1_s2:
-            arr_count += 1
-            arr.append(i+" "+j)
-            if arr_count == step_size or arr_count == len(paired_arr):
+    for pdb_file_tsv_line in paired_arr:
+        pdb_file1, pdb_file2, _ = pdb_file_tsv_line.split("\t")
+        list_key = ' '.join([pdb_file1, pdb_file2])
+        if list_key not in completed_alignment_dict:
+            list_of_file_pairs.append(list_key)
+            file_pair_count = len(list_of_file_pairs)
+            
+            if file_pair_count == step_size or file_pair_count == len(paired_arr):
                 if rank == 0:
-                    run_state += 1
-                    logging.info(f"Batch run {run_state} has started")
-
+                    logging.info(f"Batch run has started")
                     count = 0
                     arr1 = []
-                    for count_i in arr:
-
+                    for count_i in list_of_file_pairs:
+                        logging.info(count_i)
                         count += 1
-
                         arr1.append(count_i+" "+str(count))
                         if count >= size:
                             count = 0
                     for runnable_rank in range(1, size+1):
                         new_arr1 = []
-
                         new_arr1 = chunk_mem_mpi(arr1, runnable_rank)
                         comm.send(new_arr1, dest=runnable_rank)
 
@@ -978,19 +973,17 @@ def s1(dic1_s2, res_dic):
                         if len(else_arr) < 9:
                             break
 
-            if arr_count >= step_size:
-                arr = []
-                arr_count = 0
-
+            if file_pair_count >= step_size:
+                list_of_file_pairs = []
+                file_pair_count = 0
     if rank == 0:
-        if len(arr) < 1:
+        if len(list_of_file_pairs) < 1:
             print("\nYour job is completed!!!\n")
             MPI.COMM_WORLD.Abort()
         logging.debug('exit stage')
         arr11 = []
         count_1 = 0
-        for count_i1 in arr:
-
+        for count_i1 in list_of_file_pairs:
             count_1 += 1
             arr11.append(count_i1+" "+str(count_1))
             if count_1 >= size:
@@ -1039,4 +1032,4 @@ def s1(dic1_s2, res_dic):
             if len(else_arr) < 9:
                 break
 
-s1(dic1_s2, res_dic)
+s1(completed_alignment_dict, res_dic)
