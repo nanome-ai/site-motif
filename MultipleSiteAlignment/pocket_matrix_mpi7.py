@@ -1039,11 +1039,10 @@ def s1(dic1_s2, res_dic):
                 end_time = time.time()
                 l_child = ls[:3]
 
-                logging.info(
-                    f"""
-                    Pair {l_child[0]} {l_child[1]} is completed from the processor --> 
-                      {l_child[2]} in time {round((end_time-start_time), 2)} sec")"""
-                )
+                logging.info((
+                    f"Pair {l_child[0]} {l_child[1]} is completed from the processor --> "
+                    f"{l_child[2]} in time {round((end_time-start_time), 2)} sec)"
+                ))
 
             comm.send(else_ans, dest=0)
             if len(else_arr) < 9:
