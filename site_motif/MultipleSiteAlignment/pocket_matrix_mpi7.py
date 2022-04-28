@@ -10,7 +10,7 @@ import time
 from collections import defaultdict, Counter
 from mpi4py import MPI
 
-logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -21,8 +21,6 @@ logging.debug(f"size={size}")
 '''
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
 '''
-
-dire = os.getcwd()
 
 
 if len(sys.argv) == 4:
@@ -750,7 +748,7 @@ def MainCode(aline, bline):
         aline)
     res_arr2, res_dic2, res_pairs_dic2, pdb2_lines, pdb2_het_lines = file_process(
         bline)
-    logging.debug("Staring run()")
+    logging.debug("Starting run()")
     Final1, Final2 = run()
     logging.debug("Finished run()")
     NewArray = process_hits(Final1, Final2)
