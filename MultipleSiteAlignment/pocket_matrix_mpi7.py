@@ -292,31 +292,22 @@ def run():
             dic_pair_captch = {}
             if ans != 'start':
                 if not SequenceArrays1:
-                    # logging.debug("break")
                     break
             if InitiateFirstBreak:
-                # break
-                #start1 = time.time()
-
-                # time.sleep(1)
                 if not SequenceArrays1:
-                    # logging.debug("SequenceArrays1 empty, breaking")
                     break
                 if ObtainedCount <= 1:
-                    # logging.debug("ObtainedCount <= 1, breaking")
                     break
 
                 if len(SequenceArrays1) <= 2:
                     seq1 = ' '.join(SequenceArrays1)
                     seq2 = ' '.join(SequenceArrays2)
                     dic_whole[seq1+'\t'+seq2] = 0
-                    # logging.debug("Sequencearrays1 <= 2, breaking")
                     break
                 ObtainedCount = 0
                 SequenceArrays1, SequenceArrays2, i1, ans = PairNext(
                     copy.deepcopy(SequenceArrays1), copy.deepcopy(SequenceArrays2))
                 if not i1:
-                    # logging.debug("not i1, breaking")
                     break
                 SequenceArrays1.append(i1)
                 SequenceArrays2.append(ans)
@@ -326,24 +317,20 @@ def run():
                         ' ')[0]+'\t'+j[1].split(' ')[0]] = 0
 
                 i = i1
-                #end1 = time.time()
             while True:
                 if not ans:
-                    # logging.debug("no ans, breaking")
                     break
                 i, ans, CheckPoint = Recursion(i, ans)
                 ObtainedCount += 1
                 if not ans:
-                    # logging.debug("no ans after recursion, breaking")
                     break
                 if i+'\t'+ans in dic_whole:
-                    # logging.debug("i\tans already in dic_whole, breaking")
                     break
 
                 InitiateFirstBreak = True
                 dic_single1[i.split(' ')[0]] = 0
                 dic_single2[ans.split(' ')[0]] = 0
-                #dic_pair_captch[i.split(' ')[1]+'\t'+ans.split(' ')[1]] = 0
+                # dic_pair_captch[i.split(' ')[1]+'\t'+ans.split(' ')[1]] = 0
                 dic_pair_captch[i.split(' ')[0]+'\t'+ans.split(' ')[0]] = 0
                 SequenceArrays1.append(i)
                 SequenceArrays2.append(ans)
@@ -367,15 +354,12 @@ def process_hits(Final1, Final2):
     logging.info("Starting process_hits()")
     arr = []
     for i in zip(Final1, Final2):
-
         arr.append([i[0], i[1], len(i[0])])
 
     arr = sorted(arr, key=lambda x: int(x[2]), reverse=True)
     NewArr = []
     for i in arr:
         if int(i[2]) > 3:
-
-            # time.sleep(11)
             val1 = [j.split(' ')[1] for j in i[0][:-1]]
             val2 = [j.split(' ')[1] for j in i[1][:-1]]
             NewArr.append([val1, val2, len(val1)])
@@ -398,9 +382,9 @@ def process_hits(Final1, Final2):
         for j in NewArray:
             dic = {j[0][k]+' '+j[1][k]: 0 for k in range(len(j[0]))}
 
-            # time.sleep(11)
             dic_count = sum([1 for k in range(len(i[0]))
                              if i[0][k]+' '+i[1][k] in dic])
+
             if dic_count == len(j[0]):
                 check = False
                 break
@@ -441,7 +425,6 @@ def kabsch(P, Q, check):
     V, S, W = np.linalg.svd(C)
     d = (np.linalg.det(V) * np.linalg.det(W)) < 0.0
     if d:
-
         S[-1] = -S[-1]
         V[:, -1] = -V[:, -1]
     # Create Rotation matrix U
@@ -633,8 +616,6 @@ def SiteGen():
         arr1_dihedral_dic[i[0]+"_CA"] = np.asarray(dic_ca[i[0]])[0]
         arr1_dihedral_dic[i[0]+"_N"] = np.asarray(dic_n[i[0]])[0]
 
-    # time.sleep(11)
-
     dic_cent, dic_ca, dic_n = defaultdict(
         list), defaultdict(list), defaultdict(list)
     for i in range(0, len(site2_coord)):
@@ -674,9 +655,6 @@ def SiteGen1(arr):
             j1 = "%.3f" % j
             var += dic[len(j1.split(".")[0])]+j1
         arr1.append(var)
-
-    # for i in zip(arr,arr1):
-    #	print(i)
 
     out = open("frag.pdb", 'w')
 
@@ -784,7 +762,6 @@ def MainCode(aline, bline):
         aline)
     res_arr2, res_dic2, res_pairs_dic2, pdb2_lines, pdb2_het_lines = file_process(
         bline)
-    # time.sleep(11)
     logging.debug("Staring run()")
     Final1, Final2 = run()
     logging.debug("Finished run()")
@@ -793,8 +770,7 @@ def MainCode(aline, bline):
         return 'None\tNone'
         # sys.exit()
 
-    # time.sleep(11)
-    # Note bring coordinate to center befroe doing any opertation
+    # Note bring coordinate to center before doing any opertation
 
     pdb1_trans_coord, pdb1_res_info, pdb1_generated_coord, pdb1_ca_dic = [
     ], [], [], defaultdict(list)
