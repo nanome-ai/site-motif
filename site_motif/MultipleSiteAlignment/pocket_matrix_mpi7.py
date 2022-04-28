@@ -953,8 +953,8 @@ def s1(completed_alignment_dict, res_dic):
                             try:
                                 else_ans1 = MainCode(ls[3], ls[4])
                             except:
-                                logging.error("MainCode() failed")
-                                raise
+                                logging.error("MainCode() failed", exc_info=True)
+                                MPI.COMM_WORLD.Abort()
                             else_ans.append(ls[0]+"\t"+ls[1]+"\t"+else_ans1)
 
                             end_time = time.time()
