@@ -10,7 +10,7 @@ import time
 from collections import defaultdict, Counter
 from mpi4py import MPI
 
-logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+logging.basicConfig(level=logging.INFO, format="[%(levelname)s] %(message)s")
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
@@ -341,12 +341,12 @@ def run():
 
             Final1.append(SequenceArrays1)
             Final2.append(SequenceArrays2)
-    logging.info("Run completed")
+    logging.debug("Run completed")
     return Final1, Final2
 
 
 def process_hits(Final1, Final2):
-    logging.info("Starting process_hits()")
+    logging.debug("Starting process_hits()")
     arr = []
     for i in zip(Final1, Final2):
         arr.append([i[0], i[1], len(i[0])])
@@ -385,7 +385,7 @@ def process_hits(Final1, Final2):
                 break
         if check:
             NewArray.append(i)
-    logging.info("finished process_hits()")
+    logging.debug("finished process_hits()")
     return NewArray
 
 # END OF MAIN MAPP CODE
@@ -592,19 +592,13 @@ def SiteGen():
         list), defaultdict(list), defaultdict(list)
     for i in range(0, len(arr)):
         info, name = pdb1_res_info[i]
-        # if info == 'THR-A-70':
-        #	print(info, name, 'inner')
-        #	time.sleep(.1)
         dic_cent[info].append(arr[i])
         if name == "CA":
             dic_ca[info].append(arr[i])
         if name == "N":
 
             dic_n[info].append(arr[i])
-            # if info == 'THR-A-70':
 
-            #	print(arr[i],'---')
-            #	time.sleep(11)
     for i in dic_cent.items():
 
         arr1_dihedral_dic[i[0]+"_CN"] = np.mean(i[1], axis=0)
@@ -741,7 +735,7 @@ def print_scores(arr):
 
 
 def MainCode(aline, bline):
-    logging.info("MainCode Running!")
+    logging.debug("Starting MainCode")
     aline = aline.split('__')  # __
     bline = bline.split('__')
     global res_dic1, res_dic2, res_arr1, res_arr2, res_pairs_dic1, res_pair2_dic2
@@ -765,13 +759,12 @@ def MainCode(aline, bline):
         # sys.exit()
 
     # Note bring coordinate to center before doing any opertation
-
     pdb1_trans_coord, pdb1_res_info, pdb1_generated_coord, pdb1_ca_dic = [
     ], [], [], defaultdict(list)
     pdb2_trans_coord, pdb2_res_info, pdb2_generated_coord, pdb2_ca_dic = [
     ], [], [], defaultdict(list)
     pdb1_ln, pdb2_ln = 0, 0
-    logging.info("Processing pdb1_lines")
+    logging.debug("Processing pdb1_lines")
     for line in pdb1_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -786,8 +779,8 @@ def MainCode(aline, bline):
                 pdb1_ca_dic[res1].append(line[28:38].strip())
                 pdb1_ca_dic[res1].append(line[38:46].strip())
                 pdb1_ca_dic[res1].append(line[46:54].strip())
-    logging.info("Finished pdb1_lines")
-    logging.info("Processing pdb2_lines")
+    logging.debug("Finished pdb1_lines")
+    logging.debug("Processing pdb2_lines")
     for line in pdb2_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -846,7 +839,7 @@ def MainCode(aline, bline):
         MAPP_seqs = 'No Match'
 
     # return MAPP_scores+'\t'+MAPP_seqs
-    logging.info("finishing MainCode()")
+    logging.debug("finishing MainCode()")
     return MAPP_scores+'\t'+MAPP_seqs
 
 # MPI CODE START
@@ -948,14 +941,11 @@ def s1(dic1_s2, res_dic):
                     out = open("align_output.txt", 'a+')
                     for gettable_rank in range(1, size+1):
                         ans = comm.recv(source=MPI.ANY_SOURCE)
+                        logging.info(f"Batch run {gettable_rank} has finished")
                         for l2 in ans:
-
                             out.write(l2+"\n")
                     time.sleep(.1)
                     out.close()
-
-                    time.sleep(.1)
-                    print('done\n'	)
 
                 elif rank != 0:
                     else_ans = []
@@ -978,7 +968,7 @@ def s1(dic1_s2, res_dic):
                             l_child = ls[:3]
 
                             msg = (
-                                f"Pair {l_child[0]} {l_child[1]} is completed from the processor -->"
+                                f"Pair {l_child[0]} {l_child[1]} was completed by processor --> "
                                 f"{l_child[2]} in time {round((end_time-start_time), 2)} sec"
                             )
                             logging.info(msg)
@@ -996,7 +986,7 @@ def s1(dic1_s2, res_dic):
         if len(arr) < 1:
             print("\nYour job is completed!!!\n")
             MPI.COMM_WORLD.Abort()
-        print('exit stage')
+        logging.debug('exit stage')
         arr11 = []
         count_1 = 0
         for count_i1 in arr:
@@ -1019,6 +1009,7 @@ def s1(dic1_s2, res_dic):
                 out.write(l2+"\n")
         time.sleep(.1)
         out.close()
+        logging.info("Alignment completed.")
         MPI.COMM_WORLD.Abort()
 
     elif rank != 0:
