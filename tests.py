@@ -22,11 +22,10 @@ class MultipleSiteAlignmentTestCase(TestCase):
         self.assertFalse(os.path.isfile(self.pairs_list_file))
         self.assertFalse(os.path.isfile(self.pdb_size_file))       
         self.assertFalse(os.path.isfile(self.align_output_file))
-
-        test_folder = 'test_data/ATP2'
-        cmd = f'./run.sh {test_folder}'
+        sites_folder = 'test_data/ATP_SUBSET'
+        cmd = f'./run.sh {sites_folder}'
         os.system(cmd)
-        
+
         self.assertTrue(os.path.isfile(self.pairs_list_file))
         self.assertTrue(os.path.isfile(self.pdb_size_file))       
         self.assertTrue(os.path.isfile(self.align_output_file))

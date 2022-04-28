@@ -5,3 +5,4 @@ example
 test_data/*
 !test_data/ATP
 !test_data/ATP_SUBSET
+__pycache__
