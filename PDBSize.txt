@@ -1,2 +1,0 @@
-fixed_binding_site.pdb	105
-moving_binding_site.pdb	103

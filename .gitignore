@@ -1,0 +1,8 @@
+PairList.txt
+PDBSize.txt
+align_output.txt
+example
+test_data/*
+!test_data/ATP
+!test_data/ATP_SUBSET
+__pycache__
