@@ -33,7 +33,6 @@ def AvgDistance(arr1, arr2):
         if i[0] != '-' and i[1] != '-':
             count_arr.append(
                 abs(int(i[0].split('-')[-1]) - (int(i[1].split('-')[-1])-1)))
-    ln = len(count_arr)
     if not count_arr:
         return None
     arr = []

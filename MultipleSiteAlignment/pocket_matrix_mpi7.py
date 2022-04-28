@@ -76,7 +76,6 @@ def file_process(arr):
     1) From whole coordinate -> to centroid
     2) CB -> Again Simple. If Glycine, then Ca
     3) CA
-
     '''
     logging.debug("running file_process")
     whole_dic = {}
@@ -110,18 +109,13 @@ def file_process(arr):
     for line in brr:
         if line[:4] == "ATOM":
             val = line[17:20]+'-'+line[21:22]+'-'+line[22:26].strip()
-
-            # if val == 'THR-A-70':
-            #	print(line)
             dic1[val].append(
                 [line[28:38].strip(), line[38:46].strip(), line[46:54].strip()])
             dic2[val].append(line[13:16].strip())
 
     res, coord1 = [], []
     for i, j in dic2.items():
-
         coord = np.asarray(dic1[i], dtype='float')
-
         cn = np.mean(coord, axis=0)
         if i[:3] == "GLY":
             for j1 in range(len(j)):
@@ -144,15 +138,11 @@ def file_process(arr):
             coord1 = np.append(coord1, [[ca, cb, cn]], axis=0)
 
     arr = PairWise(res, coord1)
-
     arr = sorted(arr, key=lambda x: float(x[3]))
-    # random.shuffle(arr)
-    #dic = defaultdict(list)
     dic, dic1_pairs = defaultdict(list), defaultdict(list)
     arr1 = []
 
     for i in arr:
-
         dic[i[0]+' '+i[1]].append(i[2])
         dic[i[0]+' '+i[1]].append(i[3])
         dic[i[0]+' '+i[1]].append(i[4])
@@ -177,9 +167,7 @@ def compare_matrices(mat1, mat2):
 
 
 def CheckDistance(S1, S2, v1, v2):
-    #S1, S2 = S1[1:], S2[1:]
-
-    # if res_dic1[v1] == res_dic2[v2]::
+    # S1, S2 = S1[1:], S2[1:]
     if compare_matrices(res_dic1[v1], res_dic2[v2]):
         v1a = v1.split(' ')[1]
         v2a = v2.split(' ')[1]
@@ -196,7 +184,6 @@ def CheckDistance(S1, S2, v1, v2):
                 return False
 
         return True
-
     else:
         return False
 
@@ -290,7 +277,6 @@ def run():
 
     dic_whole = {}
     for i in res_arr1:
-        logging.debug(f"checking {i}")
         if BreakLoop:
             break
 
@@ -1022,15 +1008,18 @@ def s1(dic1_s2, res_dic):
                             try:
                                 else_ans1 = MainCode(ls[3], ls[4])
                             except:
+                                logging.error("MainCode() failed")
                                 raise
-                                pass
                             else_ans.append(ls[0]+"\t"+ls[1]+"\t"+else_ans1)
 
                             end_time = time.time()
                             l_child = ls[:3]
-                            print("Pair ", l_child[0], l_child[1], " is completed from the processor --> ",
-                                  l_child[2], " in time ", round((end_time-start_time), 2), " sec")
 
+                            msg = (
+                                f"Pair {l_child[0]} {l_child[1]} is completed from the processor -->"
+                                f"{l_child[2]} in time {round((end_time-start_time), 2)} sec"
+                            )
+                            logging.info(msg)
                         comm.send(else_ans, dest=0)
                         # break
 
@@ -1068,7 +1057,6 @@ def s1(dic1_s2, res_dic):
                 out.write(l2+"\n")
         time.sleep(.1)
         out.close()
-        breakpoint()
         MPI.COMM_WORLD.Abort()
 
     elif rank != 0:
@@ -1096,8 +1084,6 @@ def s1(dic1_s2, res_dic):
                 )
 
             comm.send(else_ans, dest=0)
-            # break
-
             if len(else_arr) < 9:
                 break
 
