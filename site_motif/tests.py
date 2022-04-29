@@ -16,13 +16,31 @@ class MultipleSiteAlignmentTestCase(TestCase):
             os.remove(self.pdb_size_file)
         if os.path.isfile(self.align_output_file):
             os.remove(self.align_output_file)
-            
 
-    def test_alignment(self):
+    def test_atp_subset_alignment(self):
         self.assertFalse(os.path.isfile(self.pairs_list_file))
         self.assertFalse(os.path.isfile(self.pdb_size_file))       
         self.assertFalse(os.path.isfile(self.align_output_file))
         sites_folder = 'test_data/ATP_SUBSET'
+        cmd = f'./run.sh {sites_folder}'
+        os.system(cmd)
+
+        self.assertTrue(os.path.isfile(self.pairs_list_file))
+        self.assertTrue(os.path.isfile(self.pdb_size_file))       
+        self.assertTrue(os.path.isfile(self.align_output_file))
+        with open(self.pairs_list_file, 'r') as f:
+            self.assertNotEqual(f.read(), '')
+        with open(self.pdb_size_file, 'r') as f:
+            self.assertNotEqual(f.read(), '')
+        with open(self.align_output_file, 'r') as f:
+            self.assertNotEqual(f.read(), '')
+
+    def test_fpocket_results_alignment(self):
+        self.assertFalse(os.path.isfile(self.pairs_list_file))
+        self.assertFalse(os.path.isfile(self.pdb_size_file))
+        self.assertFalse(os.path.isfile(self.align_output_file))
+        
+        sites_folder = 'test_data/example'
         cmd = f'./run.sh {sites_folder}'
         os.system(cmd)
 
