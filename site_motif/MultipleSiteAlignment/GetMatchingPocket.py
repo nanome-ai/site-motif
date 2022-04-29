@@ -2,7 +2,6 @@
 Find the best match for a given pocket in provided alignment output file.
 """
 import sys
-from collections import Counter
 import logging
 import operator
 
