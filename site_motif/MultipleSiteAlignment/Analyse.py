@@ -26,5 +26,4 @@ for line in aline:
                 minim = float(minim)
                 if res >= no_of_res and minim > mdist_min:
                     arr.append(l[0])
-
-print(Counter(arr).most_common(1)[0])
+print(Counter(arr).most_common(5))
