@@ -16,9 +16,8 @@ class MultipleSiteAlignmentTestCase(TestCase):
             os.remove(self.pdb_size_file)
         if os.path.isfile(self.align_output_file):
             os.remove(self.align_output_file)
-            
 
-    def test_alignment(self):
+    def test_atp_subset_alignment(self):
         self.assertFalse(os.path.isfile(self.pairs_list_file))
         self.assertFalse(os.path.isfile(self.pdb_size_file))       
         self.assertFalse(os.path.isfile(self.align_output_file))

@@ -22,8 +22,6 @@ logging.debug(f"size={size}")
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
 '''
 
-dire = os.getcwd()
-
 
 if len(sys.argv) == 4:
     pdb1_fold = sys.argv[1]
@@ -341,12 +339,12 @@ def run():
 
             Final1.append(SequenceArrays1)
             Final2.append(SequenceArrays2)
-    logging.info("Run completed")
+    logging.debug("Run completed")
     return Final1, Final2
 
 
 def process_hits(Final1, Final2):
-    logging.info("Starting process_hits()")
+    logging.debug("Starting process_hits()")
     arr = []
     for i in zip(Final1, Final2):
         arr.append([i[0], i[1], len(i[0])])
@@ -385,7 +383,7 @@ def process_hits(Final1, Final2):
                 break
         if check:
             NewArray.append(i)
-    logging.info("finished process_hits()")
+    logging.debug("finished process_hits()")
     return NewArray
 
 # END OF MAIN MAPP CODE
@@ -592,19 +590,13 @@ def SiteGen():
         list), defaultdict(list), defaultdict(list)
     for i in range(0, len(arr)):
         info, name = pdb1_res_info[i]
-        # if info == 'THR-A-70':
-        #	print(info, name, 'inner')
-        #	time.sleep(.1)
         dic_cent[info].append(arr[i])
         if name == "CA":
             dic_ca[info].append(arr[i])
         if name == "N":
 
             dic_n[info].append(arr[i])
-            # if info == 'THR-A-70':
 
-            #	print(arr[i],'---')
-            #	time.sleep(11)
     for i in dic_cent.items():
 
         arr1_dihedral_dic[i[0]+"_CN"] = np.mean(i[1], axis=0)
@@ -741,7 +733,7 @@ def print_scores(arr):
 
 
 def MainCode(aline, bline):
-    logging.info("MainCode Running!")
+    logging.debug("Starting MainCode")
     aline = aline.split('__')  # __
     bline = bline.split('__')
     global res_dic1, res_dic2, res_arr1, res_arr2, res_pairs_dic1, res_pair2_dic2
@@ -756,7 +748,7 @@ def MainCode(aline, bline):
         aline)
     res_arr2, res_dic2, res_pairs_dic2, pdb2_lines, pdb2_het_lines = file_process(
         bline)
-    logging.debug("Staring run()")
+    logging.debug("Starting run()")
     Final1, Final2 = run()
     logging.debug("Finished run()")
     NewArray = process_hits(Final1, Final2)
@@ -765,13 +757,12 @@ def MainCode(aline, bline):
         # sys.exit()
 
     # Note bring coordinate to center before doing any opertation
-
     pdb1_trans_coord, pdb1_res_info, pdb1_generated_coord, pdb1_ca_dic = [
     ], [], [], defaultdict(list)
     pdb2_trans_coord, pdb2_res_info, pdb2_generated_coord, pdb2_ca_dic = [
     ], [], [], defaultdict(list)
     pdb1_ln, pdb2_ln = 0, 0
-    logging.info("Processing pdb1_lines")
+    logging.debug("Processing pdb1_lines")
     for line in pdb1_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -786,8 +777,8 @@ def MainCode(aline, bline):
                 pdb1_ca_dic[res1].append(line[28:38].strip())
                 pdb1_ca_dic[res1].append(line[38:46].strip())
                 pdb1_ca_dic[res1].append(line[46:54].strip())
-    logging.info("Finished pdb1_lines")
-    logging.info("Processing pdb2_lines")
+    logging.debug("Finished pdb1_lines")
+    logging.debug("Processing pdb2_lines")
     for line in pdb2_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20]+"-"+line[21:22]+"-"+line[22:26].strip()
@@ -846,7 +837,7 @@ def MainCode(aline, bline):
         MAPP_seqs = 'No Match'
 
     # return MAPP_scores+'\t'+MAPP_seqs
-    logging.info("finishing MainCode()")
+    logging.debug("finishing MainCode()")
     return MAPP_scores+'\t'+MAPP_seqs
 
 # MPI CODE START
@@ -866,17 +857,17 @@ res_dic = pdb_res()
 
 
 def s2():
-    dic1_s2 = {}
+    completed_alignment_dict = {}
     out = open("align_output.txt", 'a+')
     out.close()
     aline = open("align_output.txt", 'r')
     for line in aline:
         line = line.strip()
-        dic1_s2[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
-    return dic1_s2
+        completed_alignment_dict[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
+    return completed_alignment_dict
 
 
-dic1_s2 = s2()
+completed_alignment_dict = s2()
 
 
 def chunk_mem_mpi(arr1, runnable_rank):
@@ -903,8 +894,7 @@ def chunk_mem_mpi(arr1, runnable_rank):
 
     return new_arr2
 
-
-def s1(dic1_s2, res_dic):
+def s1(completed_alignment_dict, res_dic):
     aline = open(paired_list, 'r').readlines()
     paired_arr = []
     for line in aline:
@@ -915,47 +905,40 @@ def s1(dic1_s2, res_dic):
     paired_arr = sorted(paired_arr, key=lambda x: int(
         x.split("\t")[2]), reverse=True)
 
-    arr = []
-    arr_count = 0
+    list_of_file_pairs = []
+    file_pair_count = 0
     step_size = size * 10  # how many pairs to batch into each process
-    run_state = 0
-    #j = j1.split("\t")[0]
-    for i1 in paired_arr:
-        i, j, _ = i1.split("\t")
-        if i+" "+j not in dic1_s2:
-            arr_count += 1
-            arr.append(i+" "+j)
-            if arr_count == step_size or arr_count == len(paired_arr):
+    for pdb_file_tsv_line in paired_arr:
+        pdb_file1, pdb_file2, _ = pdb_file_tsv_line.split("\t")
+        list_key = ' '.join([pdb_file1, pdb_file2])
+        if list_key not in completed_alignment_dict:
+            list_of_file_pairs.append(list_key)
+            file_pair_count = len(list_of_file_pairs)
+            
+            if file_pair_count == step_size or file_pair_count == len(paired_arr):
                 if rank == 0:
-                    run_state += 1
-                    logging.info(f"Batch run {run_state} has started")
-
+                    logging.info(f"Batch run has started")
                     count = 0
                     arr1 = []
-                    for count_i in arr:
-
+                    for count_i in list_of_file_pairs:
+                        logging.info(count_i)
                         count += 1
-
                         arr1.append(count_i+" "+str(count))
                         if count >= size:
                             count = 0
                     for runnable_rank in range(1, size+1):
                         new_arr1 = []
-
                         new_arr1 = chunk_mem_mpi(arr1, runnable_rank)
                         comm.send(new_arr1, dest=runnable_rank)
 
                     out = open("align_output.txt", 'a+')
                     for gettable_rank in range(1, size+1):
                         ans = comm.recv(source=MPI.ANY_SOURCE)
+                        logging.info(f"Batch run {gettable_rank} has finished")
                         for l2 in ans:
-
                             out.write(l2+"\n")
                     time.sleep(.1)
                     out.close()
-
-                    time.sleep(.1)
-                    print('done\n'	)
 
                 elif rank != 0:
                     else_ans = []
@@ -970,15 +953,15 @@ def s1(dic1_s2, res_dic):
                             try:
                                 else_ans1 = MainCode(ls[3], ls[4])
                             except:
-                                logging.error("MainCode() failed")
-                                raise
+                                logging.error("MainCode() failed", exc_info=True)
+                                MPI.COMM_WORLD.Abort()
                             else_ans.append(ls[0]+"\t"+ls[1]+"\t"+else_ans1)
 
                             end_time = time.time()
                             l_child = ls[:3]
 
                             msg = (
-                                f"Pair {l_child[0]} {l_child[1]} is completed from the processor -->"
+                                f"Pair {l_child[0]} {l_child[1]} was completed by processor --> "
                                 f"{l_child[2]} in time {round((end_time-start_time), 2)} sec"
                             )
                             logging.info(msg)
@@ -988,19 +971,17 @@ def s1(dic1_s2, res_dic):
                         if len(else_arr) < 9:
                             break
 
-            if arr_count >= step_size:
-                arr = []
-                arr_count = 0
-
+            if file_pair_count >= step_size:
+                list_of_file_pairs = []
+                file_pair_count = 0
     if rank == 0:
-        if len(arr) < 1:
+        if len(list_of_file_pairs) < 1:
             print("\nYour job is completed!!!\n")
             MPI.COMM_WORLD.Abort()
-        print('exit stage')
+        logging.debug('exit stage')
         arr11 = []
         count_1 = 0
-        for count_i1 in arr:
-
+        for count_i1 in list_of_file_pairs:
             count_1 += 1
             arr11.append(count_i1+" "+str(count_1))
             if count_1 >= size:
@@ -1019,6 +1000,7 @@ def s1(dic1_s2, res_dic):
                 out.write(l2+"\n")
         time.sleep(.1)
         out.close()
+        logging.info("Alignment completed.")
         MPI.COMM_WORLD.Abort()
 
     elif rank != 0:
@@ -1048,4 +1030,4 @@ def s1(dic1_s2, res_dic):
             if len(else_arr) < 9:
                 break
 
-s1(dic1_s2, res_dic)
+s1(completed_alignment_dict, res_dic)
