@@ -1,19 +1,19 @@
 import os
 import sys
 
-if len(sys.argv) == 2:
+if len(sys.argv) == 3:
 	fold = sys.argv[1]
+	output_dir = sys.argv[2]
 else:
 	print("pdb_res.py <input_folder>")
 	sys.exit()
-
 
 dire = os.getcwd()
 
 a1 = dire+"/"+fold
 def a():
 	dic = {}
-	out = open("PDBSize.txt",'w')
+	out = open(f"{output_dir}/PDBSize.txt",'w')
 	for i in os.listdir(a1):
 		# print(i)
 		aline = open(a1+"/"+i, 'r').readlines()

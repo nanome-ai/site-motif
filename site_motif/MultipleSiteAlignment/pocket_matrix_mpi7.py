@@ -23,15 +23,17 @@ logging.debug(f"size={size}")
 '''
 
 
-if len(sys.argv) == 4:
+if len(sys.argv) == 5:
     pdb1_fold = sys.argv[1]
     paired_list = sys.argv[2]
     pdb_res_no_fil = sys.argv[3]
+    output_dir = sys.argv[4]
 
 else:
     print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
     sys.exit()
 
+align_output_file = f'{output_dir}/align_output.txt'
 
 def PairWise(res, coord):
     logging.debug("running PairWise")
@@ -858,9 +860,9 @@ res_dic = pdb_res()
 
 def s2():
     completed_alignment_dict = {}
-    out = open("align_output.txt", 'a+')
+    out = open(align_output_file, 'a+')
     out.close()
-    aline = open("align_output.txt", 'r')
+    aline = open(align_output_file, 'r')
     for line in aline:
         line = line.strip()
         completed_alignment_dict[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
@@ -931,7 +933,7 @@ def s1(completed_alignment_dict, res_dic):
                         new_arr1 = chunk_mem_mpi(arr1, runnable_rank)
                         comm.send(new_arr1, dest=runnable_rank)
 
-                    out = open("align_output.txt", 'a+')
+                    out = open(align_output_file, 'a+')
                     for gettable_rank in range(1, size+1):
                         ans = comm.recv(source=MPI.ANY_SOURCE)
                         logging.info(f"Batch run {gettable_rank} has finished")
@@ -992,7 +994,7 @@ def s1(completed_alignment_dict, res_dic):
             new_arr1 = chunk_mem_mpi(arr11, runnable_rank)
             comm.send(new_arr1, dest=runnable_rank)
 
-        out = open("align_output.txt", 'a+')
+        out = open(f"${output_dir}/align_output.txt", 'a+')
         for gettable_rank in range(1, size+1):
             ans = comm.recv(source=MPI.ANY_SOURCE)
             logging.debug(ans)
