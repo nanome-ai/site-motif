@@ -6,17 +6,19 @@ data_folder=$1
 output_dir=$2
 mkdir -p $output_dir
 
-python $(pwd)/site_motif/MultipleSiteAlignment/Pairs.py $data_folder $output_dir
+python $(pwd)/site_motif/Pairs.py $data_folder $output_dir
 
+pair_script=$(pwd)/site_motif/Pairs.py
 pairs_list="$output_dir/PairList.txt"
+python $pair_script $data_folder $output_dir
 cat $pairs_list
-python $(pwd)/site_motif/MultipleSiteAlignment/Pairs.py $data_folder $output_dir
 
+pdb_size_script=$(pwd)/site_motif/PDBSize.py
 pdb_sizes="$output_dir/PDBSize.txt"
-python $(pwd)/site_motif/MultipleSiteAlignment/PDBSize.py $data_folder $output_dir
+python $pdb_size_script $data_folder $output_dir
 cat $pdb_sizes
 
-mpiexec -n 4 python $(pwd)/site_motif/MultipleSiteAlignment/pocket_matrix_mpi7.py $data_folder $pairs_list $pdb_sizes $output_dir
+mpiexec -n 4 python $(pwd)/site_motif/pocket_matrix_mpi7.py $data_folder $pairs_list $pdb_sizes $output_dir
 
 end_time=$(date +%s)
 elapsed=$(( end_time - start_time ))

@@ -1,23 +1,9 @@
 from unittest import TestCase
 import os
-import subprocess
 import tempfile
 
 
 class MultipleSiteAlignmentTestCase(TestCase):
-
-    # def setUp(self):
-    #     # self.temp_dir = tempfile.TemporaryDirectory().name
-    #     # Delete intermediate files if they exist
-    #     if os.path.isfile(self.pairs_list_file):
-    #         os.remove(self.pairs_list_file)
-    #     if os.path.isfile(self.pdb_size_file):
-    #         os.remove(self.pdb_size_file)
-    #     if os.path.isfile(self.align_output_file):
-    #         os.remove(self.align_output_file)
-
-    # def tearDown(self):
-    #     self.temp_dir.cleanup()
 
     def test_atp_subset_alignment(self):
         with tempfile.TemporaryDirectory() as output_dir:
