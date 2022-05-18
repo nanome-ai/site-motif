@@ -1,9 +1,6 @@
-# SiteMotif (MAPP-3D) is a graph based method for aligning protein binding sites ( both pairwise and multiple site alignment ) in sequence-order independent fashion written in Python version 2.7.
-**Two types of scripts have been made to serve two independent purposes**
-1) **pocket_matrix7.py** - This code perform binding site alignment taking a pair of binding sites as the inputs (**i.e pairwise alignment**).
-It takes input an atomic coordinates of the binding sites in PDB format, finds optimal alignment, and superposes site1 onto site2.<br>
-Usage: python2.7 pocket_matrix7.py <site1.pdb> <site2.pdb><br>
-Example: python2.7 pocket_matrix7.py 1L2T_ATP_A_1301.pdb 1TF7_ATP_A_1901.pdb 
+# SiteMotif is a graph based method for aligning protein binding sites ( both pairwise and multiple site alignment ) in sequence-order independent fashion written for Python 3.7
+
+This repo is forked from https://github.com/santhoshgits/MAPP-3D. We converted it to run on python 3, removed the PairwiseAlignment portion, and modified the directory structure to suit our needs
 
 ```markdown
 1. align.txt - contains list of residues matched between sites
@@ -12,14 +9,6 @@ Example: python2.7 pocket_matrix7.py 1L2T_ATP_A_1301.pdb 1TF7_ATP_A_1901.pdb
 4. site1.pdb - same as fixed.pdb but contains only the coorinates of matched residues
 5. site2.pdb - same as frag.pdb but contains only the coorinates of matched residues
 ```
-###### All required files and scripts can be found in the directory 'PairWiseComparison'
-
-2) **pocket_matrix7_mpi.py** - This is the extension the above script 'pocket_matrix7.py' with an added MPI support. This code is designed to handle large number of comparisons (i.e. million pairs ) on a cluster or supercomputer or multi-core desktop machines.
-
-> ### NOTE
->This module only report two things, i) residue-residue correspondence and ii) M-scores for all input pairs. It doesn't output the newly aligned coordinates. However, if a user is interested to see the translated coordinated of multiple alignment in a graphics viewer such as Pymol, we recommend them to use pairwise alignment code. 
-
-
 ###### All required files and scripts for this mode can be found in the directory 'MultipleSiteAlignment'
 
 ---
@@ -66,7 +55,7 @@ arg1 - ATP site folder<br>
 arg2 - output of Pairs.py<br>
 arg3 - output of PDBSize.py
 
-Example) mpirun -n 4 python2.7 pocket_matrix_mpi7.py ATP PairList.txt PDBSize.txt <br>
+Example) mpirun -n 4 python pocket_matrix_mpi7.py ATP PairList.txt PDBSize.txt <br>
 align_output.txt is the output file generated after running the step 3.
 
 4. **Analysing SiteMotif Result**-
@@ -83,7 +72,7 @@ python2.7 Analyse.py align_output.txt .4 7
 
 4. **Generating Motif based on the chosen representative (For undermining purposes only)**<br>
 Usage: Motif.py <align_output.txt> < representative-site> <No. of residue match><br>
-Example: python2.7 Motif.py align_output.txt 1B0U_ATP_A_301.pdb 4
+Example: python Motif.py align_output.txt 1B0U_ATP_A_301.pdb 4
 
 Output: [WW]-x-x-[IHF]-x-[VA]-x(18)-[PSA]-[TS]-G-[SA]-G-K-[ST]-T-x(22)-[EQ]-x(78)<br>
 The sequence [TS]-G-[SA]-G-K-[ST]-T is a well characterized Walker motif associated with nucleotide binding was identified correctly by SiteMotif. 
