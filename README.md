@@ -76,3 +76,6 @@ Example: python Motif.py align_output.txt 1B0U_ATP_A_301.pdb 4
 
 Output: [WW]-x-x-[IHF]-x-[VA]-x(18)-[PSA]-[TS]-G-[SA]-G-K-[ST]-T-x(22)-[EQ]-x(78)<br>
 The sequence [TS]-G-[SA]-G-K-[ST]-T is a well characterized Walker motif associated with nucleotide binding was identified correctly by SiteMotif. 
+
+## Citations
+Sankar S, Chandra N (2022) SiteMotif: A graph-based algorithm for deriving structural motifs in Protein Ligand binding sites. PLoS Comput Biol 18(2): e1009901. https://doi.org/10.1371/journal.pcbi.1009901
