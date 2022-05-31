@@ -1,28 +1,28 @@
-# SiteMotif is a graph based method for aligning protein binding sites ( both pairwise and multiple site alignment ) in sequence-order independent fashion written for Python 3.7
+# SiteMotif is a graph based method for aligning protein binding sites in sequence-order independent fashion
 
 This repo is forked from https://github.com/santhoshgits/MAPP-3D. We converted it to run on python 3, removed the PairwiseAlignment portion, and modified the directory structure to suit our needs
 
+## Usage
+
 ```markdown
-1. align.txt - contains list of residues matched between sites
-2. fixed.pdb - translated coordinate of the fixed binding site
-3. frag.pdb - translated coordinate of the reference site
-4. site1.pdb - same as fixed.pdb but contains only the coorinates of matched residues
-5. site2.pdb - same as frag.pdb but contains only the coorinates of matched residues
+./bin/site-motif <sites_dir> <output_dir>
+
+ * sites_dir = folder containing pdb files you wish to align
+ * output_dir = folder to store site-motif results
 ```
-###### All required files and scripts for this mode can be found in the directory 'MultipleSiteAlignment'
 
 ---
 
-<span style="color:blue">INSTALLATION INSTRUCTION</span>
-1) To run pocket_matrix7.py, no installation is required other than python version 2.7.
-2) For parallel implementation of SiteMotif i.e pocket_matrix7_mpi.py. User have to install MPI librarires such as MPICH compatible for their system architecture.
-Please refer to this link regarding installation instruction https://www.mpich.org/downloads/.
-After successful installation of mpich. User then have to install a python MPI package 'mpi4py' to communicate with main MPI binaries.
-The command for installing mpi4py is 'pip install mpi4py'.
+<span style="color:blue">INSTALLATION INSTRUCTION</span><br>
+<p>An MPI library such as MPICH is required</p>
+<p>Please refer to https://www.mpich.org/downloads/ for install instructions.</p>
+python requirements
 
-Note: All the above softwares will require sudo previlige for installations. So please invoke the terminal with sudo command.
+<p> After MPICH installed on your host, install python requirements</p>
 
----
+```markdown
+pip install -r requirements.txt 
+```
 
 ---
 <h3><span style="color:red">Handling ERRORS</span></h3>
@@ -41,7 +41,7 @@ For the purpose of this tutorial, we have added a total of 100 ATP binding sites
 
 1. **Run Pairs.py script -** This will read all sites in the given folder and create a tab separated paired entries stored in 'Pairs.txt'.  
 User can provide their custom pair wise entries to avoid pairs that you dont want to compare.
-Usage: python2.7 Pairs.py ATP <br> 
+Usage: python Pairs.py ATP <br> 
 Output: PairList.txt
 PairList.txt is tab separated
 
@@ -50,7 +50,7 @@ PairList.txt is tab separated
 Output: PDBSize.txt
 
 3. **Running SiteMotif**<br>
-USAGE: mpirun -n 4 python2.7 pocket_matrix_mpi7.py arg1 arg2 arg3<br>
+USAGE: mpirun -n 4 python pocket_matrix_mpi7.py arg1 arg2 arg3<br>
 arg1 - ATP site folder<br>
 arg2 - output of Pairs.py<br>
 arg3 - output of PDBSize.py
@@ -68,7 +68,7 @@ after imposing a cutoff of M-dist-min > 0.6 and M-dist-max > 0.4.</span>
 NOTE: The nature of binding site varies from one ligand to the next, as well as from one binding sites to another. As a result, it is recommended to do an initial analysis of the site's network and select an acceptable representative.
 
 Run the below provided script to find the representative site<br>
-python2.7 Analyse.py align_output.txt .4 7
+python Analyse.py align_output.txt .4 7
 
 4. **Generating Motif based on the chosen representative (For undermining purposes only)**<br>
 Usage: Motif.py <align_output.txt> < representative-site> <No. of residue match><br>
