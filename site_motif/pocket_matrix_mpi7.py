@@ -878,10 +878,9 @@ def chunk_mem_mpi(arr1, runnable_rank):
         if int(i.split(" ")[2]) == runnable_rank:
             new_arr1.append(i)
     new_arr2 = []
-    cwd = os.getcwd()
     for i in new_arr1:
-        aline = open(cwd+"/"+pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
-        bline = open(cwd+"/"+pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
+        aline = open(pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
+        bline = open(pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
         ac = ""
         bc = ""
         for al in aline:
