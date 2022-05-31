@@ -11,7 +11,6 @@ python $(pwd)/site_motif/Pairs.py $data_folder $output_dir
 pair_script=$(pwd)/site_motif/Pairs.py
 pairs_list="$output_dir/PairList.txt"
 python $pair_script $data_folder $output_dir
-cat $pairs_list
 
 pdb_size_script=$(pwd)/site_motif/PDBSize.py
 pdb_sizes="$output_dir/PDBSize.txt"
