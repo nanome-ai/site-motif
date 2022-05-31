@@ -1,27 +1,28 @@
-# SiteMotif is a graph based method for aligning protein binding sites ( both pairwise and multiple site alignment ) in sequence-order independent fashion written for Python 3.7
+# SiteMotif is a graph based method for aligning protein binding sites in sequence-order independent fashion
 
 This repo is forked from https://github.com/santhoshgits/MAPP-3D. We converted it to run on python 3, removed the PairwiseAlignment portion, and modified the directory structure to suit our needs
 
+## Usage
+
 ```markdown
-1. align.txt - contains list of residues matched between sites
-2. fixed.pdb - translated coordinate of the fixed binding site
-3. frag.pdb - translated coordinate of the reference site
-4. site1.pdb - same as fixed.pdb but contains only the coorinates of matched residues
-5. site2.pdb - same as frag.pdb but contains only the coorinates of matched residues
+./bin/site-motif <sites_dir> <output_dir>
+
+ * sites_dir = folder containing pdb files you wish to align
+ * output_dir = folder to store site-motif results
 ```
-###### All required files and scripts for this mode can be found in the directory 'MultipleSiteAlignment'
 
 ---
 
-<span style="color:blue">INSTALLATION INSTRUCTION</span>
-2) An MPI library such as MPICH is required
-Please refer to this link regarding installation instruction https://www.mpich.org/downloads/.
+<span style="color:blue">INSTALLATION INSTRUCTION</span><br>
+<p>An MPI library such as MPICH is required</p>
+<p>Please refer to https://www.mpich.org/downloads/ for install instructions.</p>
 python requirements
+
+<p> After MPICH installed on your host, install python requirements</p>
+
 ```markdown
 pip install -r requirements.txt 
 ```
-
----
 
 ---
 <h3><span style="color:red">Handling ERRORS</span></h3>
