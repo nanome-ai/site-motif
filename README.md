@@ -14,13 +14,12 @@ This repo is forked from https://github.com/santhoshgits/MAPP-3D. We converted i
 ---
 
 <span style="color:blue">INSTALLATION INSTRUCTION</span>
-1) To run pocket_matrix7.py, no installation is required other than python version 2.7.
-2) For parallel implementation of SiteMotif i.e pocket_matrix7_mpi.py. User have to install MPI librarires such as MPICH compatible for their system architecture.
+2) An MPI library such as MPICH is required
 Please refer to this link regarding installation instruction https://www.mpich.org/downloads/.
-After successful installation of mpich. User then have to install a python MPI package 'mpi4py' to communicate with main MPI binaries.
-The command for installing mpi4py is 'pip install mpi4py'.
-
-Note: All the above softwares will require sudo previlige for installations. So please invoke the terminal with sudo command.
+python requirements
+```markdown
+pip install -r requirements.txt 
+```
 
 ---
 
@@ -41,7 +40,7 @@ For the purpose of this tutorial, we have added a total of 100 ATP binding sites
 
 1. **Run Pairs.py script -** This will read all sites in the given folder and create a tab separated paired entries stored in 'Pairs.txt'.  
 User can provide their custom pair wise entries to avoid pairs that you dont want to compare.
-Usage: python2.7 Pairs.py ATP <br> 
+Usage: python Pairs.py ATP <br> 
 Output: PairList.txt
 PairList.txt is tab separated
 
@@ -50,7 +49,7 @@ PairList.txt is tab separated
 Output: PDBSize.txt
 
 3. **Running SiteMotif**<br>
-USAGE: mpirun -n 4 python2.7 pocket_matrix_mpi7.py arg1 arg2 arg3<br>
+USAGE: mpirun -n 4 python pocket_matrix_mpi7.py arg1 arg2 arg3<br>
 arg1 - ATP site folder<br>
 arg2 - output of Pairs.py<br>
 arg3 - output of PDBSize.py
@@ -68,7 +67,7 @@ after imposing a cutoff of M-dist-min > 0.6 and M-dist-max > 0.4.</span>
 NOTE: The nature of binding site varies from one ligand to the next, as well as from one binding sites to another. As a result, it is recommended to do an initial analysis of the site's network and select an acceptable representative.
 
 Run the below provided script to find the representative site<br>
-python2.7 Analyse.py align_output.txt .4 7
+python Analyse.py align_output.txt .4 7
 
 4. **Generating Motif based on the chosen representative (For undermining purposes only)**<br>
 Usage: Motif.py <align_output.txt> < representative-site> <No. of residue match><br>
