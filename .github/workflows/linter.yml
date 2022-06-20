@@ -2,7 +2,7 @@ name: autopep8
 on:
   pull_request:
     branches:
-      - master
+      - main
 jobs:
   autopep8:
     # Check if the PR is not from a fork
