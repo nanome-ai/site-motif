@@ -6,7 +6,7 @@ with open(README_PATH, 'r') as f:
     README = f.read()
 
 setup(
-    name='site-motif',
+    name='site_motif',
     packages=find_packages(exclude=["tests"]),
     version='0.1.0',
     license='Apache License 2.0',
