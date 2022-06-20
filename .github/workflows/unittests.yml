@@ -9,4 +9,5 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - run: apt-get update && apt-get install mpich
     - run: python -m unittest tests
