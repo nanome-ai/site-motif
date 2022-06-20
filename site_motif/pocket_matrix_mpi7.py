@@ -1,8 +1,6 @@
 import copy
 import logging
-import os
 import math
-import mpi4py
 import numpy as np
 import re
 import sys
@@ -21,19 +19,6 @@ logging.debug(f"size={size}")
 '''
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
 '''
-
-
-if len(sys.argv) == 5:
-    pdb1_fold = sys.argv[1]
-    paired_list = sys.argv[2]
-    pdb_res_no_fil = sys.argv[3]
-    output_dir = sys.argv[4]
-
-else:
-    print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
-    sys.exit()
-
-align_output_file = f'{output_dir}/align_output.txt'
 
 def PairWise(res, coord):
     logging.debug("running PairWise")
@@ -498,11 +483,10 @@ def blosum():
             new_min_max = []
             for i in min_max:
                 new_min_max.append(i+new_min)
-        maxima = float(max(new_min_max))
 
         for j, k in zip(res_info_split, new_min_max):
             ans.append(residue_dict_single[residue] +
-                       " "+residue_dict_single[j]+" "+str(k))
+                       " "+ residue_dict_single[j]+" "+str(k))
 
     dic_temp = {}
     residue_pairs_dictionary = {}
@@ -514,9 +498,6 @@ def blosum():
             dic_temp[i0] = 0
             residue_pairs_dictionary[i0] = {}
         residue_pairs_dictionary[i0][i1] = val
-
-
-blosum()
 
 
 def dihedral1(aa1, aa2):
@@ -855,8 +836,6 @@ def pdb_res():
     return res_dic
 
 
-res_dic = pdb_res()
-
 
 def s2():
     completed_alignment_dict = {}
@@ -868,8 +847,6 @@ def s2():
         completed_alignment_dict[line.split("\t")[0]+" "+line.split("\t")[1]] = 0
     return completed_alignment_dict
 
-
-completed_alignment_dict = s2()
 
 
 def chunk_mem_mpi(arr1, runnable_rank):
@@ -1031,4 +1008,24 @@ def s1(completed_alignment_dict, res_dic):
             if len(else_arr) < 9:
                 break
 
-s1(completed_alignment_dict, res_dic)
+
+if __name__ == "__main__":
+    if len(sys.argv) == 5:
+        pdb1_fold = sys.argv[1]
+        paired_list = sys.argv[2]
+        pdb_res_no_fil = sys.argv[3]
+        output_dir = sys.argv[4]
+    else:
+        print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
+        sys.exit()
+
+    align_output_file = f'{output_dir}/align_output.txt'
+
+    blosum()
+    global res_dic
+    res_dic = pdb_res()
+    
+    global completed_alignment_dict
+    completed_alignment_dict = s2()
+    
+    s1(completed_alignment_dict, res_dic)
