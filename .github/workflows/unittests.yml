@@ -10,4 +10,5 @@ jobs:
     steps:
     - uses: actions/checkout@v2
     - run: sudo apt-get update && sudo apt-get install mpich
+    - run: pip install -e .
     - run: python -m unittest tests
