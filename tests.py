@@ -1,5 +1,6 @@
 from unittest import TestCase
 import os
+import subprocess
 import tempfile
 from site_motif import write_pairs, write_pdb_size
 
@@ -10,8 +11,22 @@ class PairListTestCase(TestCase):
         dirname = os.path.dirname(__file__)
         sites_dir = f'{dirname}/test_data/ATP'
         with tempfile.TemporaryDirectory() as output_dir:
-            write_pairs(sites_dir, output_dir)
-            output_file = f'{output_dir}/PairList.txt'
+            output_file = write_pairs(sites_dir, output_dir)
+            self.assertTrue(os.path.exists(output_file))
+            with open(output_file, 'r') as f:
+                data = f.read()
+            site_count = len(os.listdir(sites_dir))
+            # Get pair counts and remove blank lines
+            pair_count = len([pair for pair in data.split('\n') if pair])
+            self.assertEqual(pair_count, site_count ** 2)
+
+    def test_write_pairs_command(self):
+        """Test that the command line version of write_pairs works."""
+        dirname = os.path.dirname(__file__)
+        sites_dir = f'{dirname}/test_data/ATP'
+        with tempfile.TemporaryDirectory() as output_dir:
+            subprocess.run(['python', 'site_motif/Pairs.py', sites_dir, output_dir])
+            output_file = os.path.join(output_dir, 'PairList.txt')
             self.assertTrue(os.path.exists(output_file))
             with open(output_file, 'r') as f:
                 data = f.read()
@@ -24,16 +39,29 @@ class PairListTestCase(TestCase):
 class PDBSizeTestCase(TestCase):
 
     def test_write_pdb_size(self):
+        """Test write_pdb_size function."""
         dirname = os.path.dirname(__file__)
         sites_dir = f'{dirname}/test_data/ATP'
         with tempfile.TemporaryDirectory() as output_dir:
-            write_pdb_size(sites_dir, output_dir)
-            output_file = f'{output_dir}/PDBSize.txt'
+            output_file = write_pdb_size(sites_dir, output_dir)
             self.assertTrue(os.path.exists(output_file))
             with open(output_file, 'r') as f:
                 output_lines = f.readlines()
-                breakpoint()
-                print('done')
+                output_data = [line.strip() for line in output_lines if line]
+            self.assertEqual(len(output_data), len(os.listdir(sites_dir)))
+    
+    def test_write_pdb_size_command(self):
+        """Test that the command-line version of write_pdb_size works."""
+        dirname = os.path.dirname(__file__)
+        sites_dir = f'{dirname}/test_data/ATP'
+        with tempfile.TemporaryDirectory() as output_dir:
+            subprocess.run(['python', 'site_motif/PDBSize.py', sites_dir, output_dir])
+            output_file = os.path.join(output_dir, 'PDBSize.txt')
+            self.assertTrue(os.path.exists(output_file))
+            with open(output_file, 'r') as f:
+                output_lines = f.readlines()
+                output_data = [line.strip() for line in output_lines if line]
+            self.assertEqual(len(output_data), len(os.listdir(sites_dir)))
 
 
 class MultipleSiteAlignmentTestCase(TestCase):

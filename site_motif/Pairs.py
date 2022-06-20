@@ -10,6 +10,7 @@ def write_pairs(site_dir, output_dir):
         for i in os.listdir(site_dir):
             for j in os.listdir(site_dir):
                 out.write(i + '\t' + j + '\n')
+    return output_file
 
 
 if __name__ == '__main__':
@@ -19,4 +20,5 @@ if __name__ == '__main__':
     else:
         print('Pairs.py <Site-Folder> <Output-Folder>')
         sys.exit()
-    write_pairs(site_folder, output_folder)
+    output_file = write_pairs(site_folder, output_folder)
+    print(output_file)
