@@ -827,8 +827,7 @@ def MainCode(aline, bline):
 
 def pdb_res():
     res_dic = {}
-    breakpoint()
-    aline = open(pdb_res_no_fil, 'r').readlines()
+    aline = open(pdb_size_file, 'r').readlines()
     for line in aline:
         line = line.strip()
         l = line.split("\t")
@@ -857,8 +856,8 @@ def chunk_mem_mpi(arr1, runnable_rank):
             new_arr1.append(i)
     new_arr2 = []
     for i in new_arr1:
-        aline = open(pdb1_fold+"/"+i.split(" ")[0], 'r').readlines()
-        bline = open(pdb1_fold+"/"+i.split(" ")[1], 'r').readlines()
+        aline = open(sites_folder+"/"+i.split(" ")[0], 'r').readlines()
+        bline = open(sites_folder+"/"+i.split(" ")[1], 'r').readlines()
         ac = ""
         bc = ""
         for al in aline:
@@ -1012,9 +1011,9 @@ def s1(completed_alignment_dict, res_dic):
 
 if __name__ == "__main__":
     if len(sys.argv) == 5:
-        pdb1_fold = sys.argv[1]
+        sites_folder = sys.argv[1]
         paired_list = sys.argv[2]
-        pdb_res_no_fil = sys.argv[3]
+        pdb_size_file = sys.argv[3]
         output_dir = sys.argv[4]
     else:
         print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
