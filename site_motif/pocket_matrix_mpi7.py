@@ -827,6 +827,7 @@ def MainCode(aline, bline):
 
 def pdb_res():
     res_dic = {}
+    breakpoint()
     aline = open(pdb_res_no_fil, 'r').readlines()
     for line in aline:
         line = line.strip()
