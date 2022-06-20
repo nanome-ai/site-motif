@@ -20,5 +20,6 @@ setup(
     keywords=['alignment', 'structural-biology', 'chemistry', 'python'],
     install_requires=[
         'numpy',
+        'mpi4py',
     ]
 )
