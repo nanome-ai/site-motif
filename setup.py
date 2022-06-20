@@ -18,4 +18,8 @@ setup(
     url='https://github.com/nanome-ai/site-motif',
     platforms="any",
     keywords=['alignment', 'structural-biology', 'chemistry', 'python'],
+    install_requires=[
+        'numpy',
+        'mpi4py',
+    ]
 )

@@ -1,0 +1,14 @@
+name: Unittests
+on:
+  pull_request:
+    branches: [ main ]
+  push:
+    branches: [ main ]
+jobs:
+  unittests:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - run: sudo apt-get update && sudo apt-get install mpich
+    - run: pip install -e .
+    - run: python -m unittest tests
