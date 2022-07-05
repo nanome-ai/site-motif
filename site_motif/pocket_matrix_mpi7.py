@@ -971,7 +971,7 @@ def s1(completed_alignment_dict, res_dic):
             new_arr1 = chunk_mem_mpi(arr11, runnable_rank)
             comm.send(new_arr1, dest=runnable_rank)
 
-        out = open(f"${output_dir}/align_output.txt", 'a+')
+        out = open(f"{output_dir}/align_output.txt", 'a+')
         for gettable_rank in range(1, size + 1):
             ans = comm.recv(source=MPI.ANY_SOURCE)
             logging.debug(ans)
