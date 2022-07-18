@@ -8,17 +8,15 @@ output_dir=$3
 mkdir -p $output_dir
 
 SCRIPT_DIR=$(dirname "$0")/..
-echo $SCRIPT_DIR
 pair_script=$SCRIPT_DIR/site_motif/Pairs.py
+pair_list="$output_dir/PairList.txt"
 python $pair_script $data_folder $output_dir $fixed_pdb
-
-pairs_list="$output_dir/PairList.txt"
 
 pdb_size_script=$SCRIPT_DIR/site_motif/PDBSize.py
 pdb_sizes="$output_dir/PDBSize.txt"
 python $pdb_size_script $data_folder $output_dir
 
-mpiexec -n 4 python $SCRIPT_DIR/site_motif/pocket_matrix_mpi7.py $data_folder $pairs_list $pdb_sizes $output_dir
+mpiexec -n 4 python $SCRIPT_DIR/site_motif/pocket_matrix_mpi7.py $data_folder $pair_list $pdb_sizes $output_dir
 
 end_time=$(date +%s)
 elapsed=$(( end_time - start_time ))

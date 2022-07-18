@@ -21,7 +21,7 @@ def write_pairs(site_dir: str, output_dir: str, reference_pdb=''):
 
 
 if __name__ == '__main__':
-    if len(sys.argv) >= 3:
+    if len(sys.argv) in [3, 4]:
         site_folder = sys.argv[1]
         output_folder = sys.argv[2]
         reference_pdb = None
