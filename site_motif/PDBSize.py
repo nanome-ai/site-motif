@@ -29,4 +29,3 @@ if __name__ == '__main__':
 		print("PDBSize.py <sites_dir> <output_dir>")
 		sys.exit()
 	output_file = write_pdb_size(site_dir, output_dir)
-	print(output_file)
