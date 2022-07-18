@@ -61,7 +61,6 @@ class PDBSizeTestCase(TestCase):
         dirname = os.path.dirname(__file__)
         sites_dir = f'{dirname}/test_data/ATP'
         with tempfile.TemporaryDirectory() as output_dir:
-            fixed_pdb = os.listdir(sites_dir)[0]
             output_file = write_pdb_size(sites_dir, output_dir)
             self.assertTrue(os.path.exists(output_file))
             with open(output_file, 'r') as f:
@@ -92,9 +91,10 @@ class MultipleSiteAlignmentTestCase(TestCase):
             pairs_list_file = f'{output_dir}/PairList.txt'
             pdb_size_file = f'{output_dir}/PDBSize.txt'
             align_output_file = f'{output_dir}/align_output.txt'
-            sites_folder = f'{dirname}/test_data/2OIB_pockets'
-            reference_pdb = f'{sites_folder}/tmpaa9wpn8u.pdb'
-            cmd = f'{dirname}/bin/site-motif {reference_pdb} {sites_folder} {output_dir}'
+            sites_dir = f'{dirname}/test_data/ATP_SUBSET'
+            
+            reference_pdb = os.listdir(sites_dir)[0]
+            cmd = f'{dirname}/bin/site-motif {reference_pdb} {sites_dir} {output_dir}'
             output = os.system(cmd)
             self.assertEqual(output, 0)
             self.assertTrue(os.path.isfile(pairs_list_file))
