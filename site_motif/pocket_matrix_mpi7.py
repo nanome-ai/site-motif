@@ -21,8 +21,8 @@ logging.debug(f"size={size}")
 '''
 
 
-def PairWise(res, coord):
-    logging.debug("running PairWise")
+def pairwise(res, coord):
+    logging.debug("running pairwise")
     arr = []
     for i in range(len(res)):
         x_ca, y_ca, z_ca = coord[i][0]
@@ -123,7 +123,7 @@ def file_process(arr):
         else:
             coord1 = np.append(coord1, [[ca, cb, cn]], axis=0)
 
-    arr = PairWise(res, coord1)
+    arr = pairwise(res, coord1)
     arr = sorted(arr, key=lambda x: float(x[3]))
     dic, dic1_pairs = defaultdict(list), defaultdict(list)
     arr1 = []
@@ -151,7 +151,7 @@ def compare_matrices(mat1, mat2):
         return False
 
 
-def CheckDistance(S1, S2, v1, v2):
+def check_distance(S1, S2, v1, v2):
     # S1, S2 = S1[1:], S2[1:]
     if compare_matrices(res_dic1[v1], res_dic2[v2]):
         v1a = v1.split(' ')[1]
@@ -189,9 +189,9 @@ def Recursion(res_pair1, sequence):
             if i != res1a and i not in dic_single1:
                 for j in res_pairs_dic2[res2b]:
                     if j != res2a and j not in dic_single2:
-                        Check = CheckDistance(
+                        Check = check_distance(
                             SequenceArrays1, SequenceArrays2, res1b + ' ' + i, res2b + ' ' + j)
-                        #Check = CheckDistance(SequenceArrays1, SequenceArrays2, [[res1b],[i]], [[res2b],[j]])
+                        # Check = check_distance(SequenceArrays1, SequenceArrays2, [[res1b],[i]], [[res2b],[j]])
                         if Check:
                             if i + '\t' + j not in dic_pair_captch:
                                 seq1 = ' '.join(
@@ -203,7 +203,7 @@ def Recursion(res_pair1, sequence):
         return None, None, 'Next'
 
 
-def SortedArr():
+def sorted_arr():
     return True
     arr = [i[0].split(' ')[1] + ' ' + i[1].split(' ')[1]
            for i in zip(SequenceArrays1, SequenceArrays2)]
@@ -213,13 +213,13 @@ def SortedArr():
     arr = '_'.join(arr)
 
     # time.sleep(11)
-    if arr not in SortedArrDic:
-        SortedArrDic[arr] = 0
+    if arr not in sorted_arr_dic:
+        sorted_arr_dic[arr] = 0
         return True
     return False
 
 
-def PairNext(S1, S2):
+def pair_next(S1, S2):
     dic1, dic2 = {}, {}
     if len(S1) <= 1:
         return None, None, None, None
@@ -239,16 +239,16 @@ def PairNext(S1, S2):
             for j in res_pairs_dic2[p2]:
                 if j not in dic2:
                     # if j+' '+p2 not in dic2 and p2+' '+j not in dic2:  # res1b+' '+i, res2b+' '+j
-                    Check = CheckDistance(S1, S2, p1 + ' ' + i, p2 + ' ' + j)
-                    #Check = CheckDistance(SequenceArrays1, SequenceArrays2, p1+' '+i, p2+' '+j)
-                    if Check:
+                    check = check_distance(S1, S2, p1 + ' ' + i, p2 + ' ' + j)
+                    #check = check_distance(SequenceArrays1, SequenceArrays2, p1+' '+i, p2+' '+j)
+                    if check:
                         seq1 = ' '.join(S1) + ' ' + p1 + ' ' + i
                         seq2 = ' '.join(S2) + ' ' + p2 + ' ' + j
 
                         if seq1 + '\t' + seq2 not in dic_whole:
                             return(S1, S2, p1 + ' ' + i, p2 + ' ' + j)
 
-    return PairNext(S1, S2)
+    return pair_next(S1, S2)
 
 
 def run():
@@ -286,7 +286,7 @@ def run():
                     dic_whole[seq1 + '\t' + seq2] = 0
                     break
                 ObtainedCount = 0
-                SequenceArrays1, SequenceArrays2, i1, ans = PairNext(
+                SequenceArrays1, SequenceArrays2, i1, ans = pair_next(
                     copy.deepcopy(SequenceArrays1), copy.deepcopy(SequenceArrays2))
                 if not i1:
                     break
@@ -316,7 +316,7 @@ def run():
                 SequenceArrays1.append(i)
                 SequenceArrays2.append(ans)
 
-            if not SortedArr():
+            if not sorted_arr():
                 BreakLoop = True
 
             seq1 = ' '.join(SequenceArrays1)
@@ -354,13 +354,13 @@ def process_hits(Final1, Final2):
 					
 					NewArr.append([val1, val2, len(val1)])	
 	'''
-    NewArray = []
+    new_array = []
     if not NewArr:
         return None
-    NewArray.append(NewArr[0])  # base condition
+    new_array.append(NewArr[0])  # base condition
     for i in NewArr:
         check = True
-        for j in NewArray:
+        for j in new_array:
             dic = {j[0][k] + ' ' + j[1][k]: 0 for k in range(len(j[0]))}
 
             dic_count = sum([1 for k in range(len(i[0]))
@@ -370,9 +370,9 @@ def process_hits(Final1, Final2):
                 check = False
                 break
         if check:
-            NewArray.append(i)
+            new_array.append(i)
     logging.debug("finished process_hits()")
-    return NewArray
+    return new_array
 
 # END OF MAIN MAPP CODE
 # START OF ALIGNMENT CODE
@@ -387,13 +387,13 @@ def rmsd(V, W):
     return np.sqrt(result / N)
 
 
-def kabsch_rmsd(P, Q, translate=False):
+def kabsch_rmsd(P, Q):
     P = kabsch_rotate(P, Q)
     return rmsd(P, Q)
 
 
 def kabsch_rotate(P, Q):
-    U = kabsch(P, Q)
+    U = kabsch(P, Q, True)
     P = np.dot(P, U)
     return P
 
@@ -544,7 +544,7 @@ def dihedral1(aa1, aa2):
     return 360.0
 
 
-def SiteGen():
+def site_gen():
     arr = copy.deepcopy(B_all)
     minim = []
 
@@ -552,7 +552,7 @@ def SiteGen():
     for i in range(0, len(arr)):
         info1, name1 = pdb1_res_info[i]
         if name1 == "CA":
-            # p#rint name1
+            # print name1
             x, y, z = arr[i]
             for j in range(0, len(site2_coord)):
                 info2, name2 = pdb2_res_info[j]
@@ -616,77 +616,6 @@ def SiteGen():
     return site_check_sum1, arr
 
 
-def SiteGen1(arr):
-
-    arr1 = []
-    dic = {1: "   ", 2: "  ", 3: " ", 4: ""}
-    for i in arr:
-        var = ""
-        for j in i:
-            j1 = "%.3f" % j
-            var += dic[len(j1.split(".")[0])] + j1
-        arr1.append(var)
-
-    out = open("frag.pdb", 'w')
-    for i1 in range(len(arr1)):
-        i = arr1[i1]
-        j = site1a[i1]
-        out.write(j[:30] + i + j[54:] + "\n")
-    out.close()
-
-    out = open('fixed.pdb', 'w')
-    for i in site2a:
-        out.write(i + "\n")
-    out.close()
-
-
-def site_gen_het(site_gen_het):
-    dic1, dic2 = {}, {}
-    out = open("align", 'w')
-
-    for i in site_gen_het:
-        i1 = i[0].split(" ")
-        out.write(i1[1] + " " + i1[0] + "\n")
-        dic1[i1[0]] = 0
-        dic2[i1[1]] = 0
-    out.close()
-    arr = B_all
-    arr1 = []
-    dic = {1: "   ", 2: "  ", 3: " ", 4: ""}
-    for i in arr:
-        var = ""
-        for j in i:
-            j1 = "%.3f" % j
-            var += dic[len(j1.split(".")[0])] + j1
-        arr1.append(var)
-
-    out = open("site1.pdb", 'w')
-    for i1 in range(0, len(arr1)):
-        i = arr1[i1]
-        j = site1a[i1]
-        if j[:4] == "ATOM":
-            res_info = j[17:20] + "-" + j[21:22] + "-" + j[22:26].strip()
-
-            if res_info in dic1:
-
-                out.write(j[:30] + i + j[54:] + "\n")
-        else:
-            out.write(j[:30] + i + j[54:] + "\n")
-    out.close()
-
-    out = open("site2.pdb", 'w')
-    for i in site2a:
-        if i[:4] == "ATOM":
-            res_info = i[17:20] + "-" + i[21:22] + "-" + i[22:26].strip()
-
-            if res_info in dic2:
-
-                out.write(i + "\n")
-        else:
-            out.write(i + "\n")
-    out.close()
-
-
 def print_scores(arr):
     res1, res2, summer = [], [], []
     control1, control2 = [], []
@@ -721,10 +650,9 @@ def MainCode(aline, bline):
     aline = aline.split('__')  # __
     bline = bline.split('__')
     global res_dic1, res_dic2, res_arr1, res_arr2, res_pairs_dic1, res_pair2_dic2
-    global dic_loop1, dic_loop2, dic_whole, SortedArrDic
+    global dic_loop1, dic_loop2, dic_whole, sorted_arr_dic
     global dic_single1, dic_single2, site1a, site2a
     global pdb1_ln, pdb2_ln
-
     global res_arr1, res_arr2, res_dic1, res_dic2, res_pairs_dic1, res_pairs_dic2, B_all
     global pdb1_res_info, pdb2_res_info, site1_coord, site2_coord
 
@@ -735,25 +663,21 @@ def MainCode(aline, bline):
     logging.debug("Starting run()")
     Final1, Final2 = run()
     logging.debug("Finished run()")
-    NewArray = process_hits(Final1, Final2)
-    if not NewArray:
+    new_array = process_hits(Final1, Final2)
+    if not new_array:
         return 'None\tNone'
         # sys.exit()
-
     # Note bring coordinate to center before doing any opertation
     pdb1_trans_coord, pdb1_res_info, pdb1_generated_coord, pdb1_ca_dic = [
     ], [], [], defaultdict(list)
     pdb2_trans_coord, pdb2_res_info, pdb2_generated_coord, pdb2_ca_dic = [
     ], [], [], defaultdict(list)
     pdb1_ln, pdb2_ln = 0, 0
-    logging.debug("Processing pdb1_lines")
     for line in pdb1_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20] + "-" + line[21:22] + "-" + line[22:26].strip()
             pdb1_res_info.append([res1, line[13:16].strip()])
             pdb1_generated_coord.append(line)
-            # if res1 == 'THR-A-70':
-            #	print(res1, line)
             pdb1_trans_coord.append(
                 [line[28:38].strip(), line[38:46].strip(), line[46:54].strip()])
             if line[13:16].strip() == "CA":
@@ -761,8 +685,7 @@ def MainCode(aline, bline):
                 pdb1_ca_dic[res1].append(line[28:38].strip())
                 pdb1_ca_dic[res1].append(line[38:46].strip())
                 pdb1_ca_dic[res1].append(line[46:54].strip())
-    logging.debug("Finished pdb1_lines")
-    logging.debug("Processing pdb2_lines")
+
     for line in pdb2_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20] + "-" + line[21:22] + "-" + line[22:26].strip()
@@ -782,33 +705,33 @@ def MainCode(aline, bline):
     ResLists = []
     maxi, index_ln = 0, 0
 
-    NewCount = 0
-    for i in NewArray:
+    new_count = 0
+    for i in new_array:
         site1_arr, site2_arr = [], []
-        site1_coord, site2_coord = copy.deepcopy(
-            pdb1_trans_coord), copy.deepcopy(pdb2_trans_coord)
-        for j in range(len(i[0])):
+        site1_coord, site2_coord = copy.deepcopy(pdb1_trans_coord), copy.deepcopy(pdb2_trans_coord)
+        pair_len = i[2]
+        for j in range(pair_len):
             site1_arr.append(pdb1_ca_dic[i[0][j]])
             site2_arr.append(pdb2_ca_dic[i[1][j]])
 
         site1_arr, site2_arr = np.asarray(
             site1_arr, dtype=float), np.asarray(site2_arr, dtype=float)
         U = kabsch(copy.deepcopy(site1_arr), copy.deepcopy(site2_arr), True)
+        rmsd = kabsch_rmsd(copy.deepcopy(site1_arr), copy.deepcopy(site2_arr))
         B_all = copy.deepcopy(site1_coord)
         B_all -= site1_arr.mean(axis=0)
         B_all = np.dot(B_all, U)
         B_all += site2_arr.mean(axis=0)
-
         site1a = pdb1_generated_coord
         site2a = pdb2_generated_coord
+        score, new_res_list = site_gen()
 
-        score, new_res_list = SiteGen()
         if score > maxi:
             maxi = score
             index_ln = len(i[0])
         else:
             if len(i[0]) < index_ln:
-                NewCount += 1
+                new_count += 1
 
         ResLists.append([new_res_list, score])
     ResLists = sorted(ResLists, key=lambda x: float(x[1]), reverse=True)
@@ -820,9 +743,16 @@ def MainCode(aline, bline):
     if not MAPP_seqs:
         MAPP_seqs = 'No Match'
 
-    # return MAPP_scores+'\t'+MAPP_seqs
+    # format the output
+    for pairings in ResLists[0]:
+        if isinstance(pairings, float):
+            continue
+        res_pairings = ' '
+        for res_pair in pairings:
+            pair_str = res_pair[0].replace(' ', '_')
+            res_pairings += pair_str + ' '
     logging.debug("finishing MainCode()")
-    return MAPP_scores + '\t' + MAPP_seqs
+    return MAPP_scores + "\t" + str(rmsd) + "\t" + res_pairings
 
 # MPI CODE START
 
@@ -833,7 +763,6 @@ def pdb_res():
     for line in aline:
         line = line.strip()
         l = line.split("\t")
-
         res_dic[l[0]] = l[1]
     return res_dic
 
@@ -1017,7 +946,7 @@ if __name__ == "__main__":
         pdb_size_file = sys.argv[3]
         output_dir = sys.argv[4]
     else:
-        print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> ")
+        print("python pocket_matrix_mpi.py <SiteFolder> <PairList.txt> <PDBSize.txt> <Output Dir>")
         sys.exit()
 
     align_output_file = f'{output_dir}/align_output.txt'
