@@ -8,21 +8,21 @@ import time
 from collections import defaultdict, Counter
 from mpi4py import MPI
 
-# logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
+logging.basicConfig(level=logging.DEBUG, format="[%(levelname)s] %(message)s")
 
 comm = MPI.COMM_WORLD
 rank = comm.Get_rank()
 size = comm.Get_size() - 1
 status = MPI.Status()
-# logging.debug(f"rank={rank}")
-# logging.debug(f"size={size}")
+logging.debug(f"rank={rank}")
+logging.debug(f"size={size}")
 '''
  mpirun -mca btl ^openib -n 2 python pocket_matrix_mpi7.py sam_atp_ip sam_atp_ip pdb_res_list 
 '''
 
 
 def pairwise(res, coord):
-    # logging.debug("running pairwise")
+    logging.debug("running pairwise")
     arr = []
     for i in range(len(res)):
         x_ca, y_ca, z_ca = coord[i][0]
@@ -63,7 +63,7 @@ def file_process(arr):
     2) CB -> Again Simple. If Glycine, then Ca
     3) CA
     '''
-    # logging.debug("running file_process")
+    logging.debug("running file_process")
     whole_dic = {}
     h_dic = {"H": 0}
     brr, het_arr, coord = [], [], []
@@ -327,12 +327,12 @@ def run():
 
             Final1.append(SequenceArrays1)
             Final2.append(SequenceArrays2)
-    # logging.debug("Run completed")
+    logging.debug("Run completed")
     return Final1, Final2
 
 
 def process_hits(Final1, Final2):
-    # logging.debug("Starting process_hits()")
+    logging.debug("Starting process_hits()")
     arr = []
     for i in zip(Final1, Final2):
         arr.append([i[0], i[1], len(i[0])])
@@ -371,7 +371,7 @@ def process_hits(Final1, Final2):
                 break
         if check:
             new_array.append(i)
-    # logging.debug("finished process_hits()")
+    logging.debug("finished process_hits()")
     return new_array
 
 # END OF MAIN MAPP CODE
@@ -886,7 +886,7 @@ def s1(completed_alignment_dict, res_dic):
         if len(list_of_file_pairs) < 1:
             print("\nYour job is completed!!!\n")
             MPI.COMM_WORLD.Abort()
-        # logging.debug('exit stage')
+        logging.debug('exit stage')
         arr11 = []
         count_1 = 0
         for count_i1 in list_of_file_pairs:
@@ -903,7 +903,7 @@ def s1(completed_alignment_dict, res_dic):
         out = open(f"{output_dir}/align_output.txt", 'a+')
         for gettable_rank in range(1, size + 1):
             ans = comm.recv(source=MPI.ANY_SOURCE)
-            # logging.debug(ans)
+            logging.debug(ans)
             for l2 in ans:
                 out.write(l2 + "\n")
         time.sleep(.1)

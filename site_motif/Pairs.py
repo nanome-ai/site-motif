@@ -9,14 +9,12 @@ def write_pairs(site_dir: str, output_dir: str, reference_pdb=''):
     If reference pdb provided, only write pairs comparing to that pdb.
     """
     output_file = os.path.join(output_dir, 'PairList.txt')
-    lines = 0
     reference_pdb_filename = os.path.basename(reference_pdb) if reference_pdb else ''
     with open(output_file, 'w') as out:
         for i in os.listdir(site_dir):
             for j in os.listdir(site_dir):
                 if not reference_pdb_filename or reference_pdb_filename in [i, j]:
                     out.write(i + '\t' + j + '\n')
-                    lines += 1
     return output_file
 
 
