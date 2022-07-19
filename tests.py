@@ -1,10 +1,8 @@
 from unittest import TestCase
-import logging
 import os
 import subprocess
 import tempfile
 from site_motif import write_pairs, write_pdb_size
-import shutil
 
 
 class PairListTestCase(TestCase):
@@ -85,7 +83,6 @@ class PDBSizeTestCase(TestCase):
 class MultipleSiteAlignmentTestCase(TestCase):
 
     def test_atp_subset_alignment(self):
-        logging.basicConfig(level=logging.DEBUG)
         dirname = os.path.dirname(__file__)
         with tempfile.TemporaryDirectory() as output_dir:
             pairs_list_file = f'{output_dir}/PairList.txt'
@@ -100,8 +97,7 @@ class MultipleSiteAlignmentTestCase(TestCase):
             self.assertTrue(os.path.isfile(pairs_list_file))
             self.assertTrue(os.path.isfile(pdb_size_file))       
             self.assertTrue(os.path.isfile(align_output_file))
-
-            shutil.copy(align_output_file, './align_output.txt')
+e
             with open(pairs_list_file, 'r') as f:
                 self.assertNotEqual(f.read(), '')
             with open(pdb_size_file, 'r') as f:
