@@ -97,7 +97,7 @@ class MultipleSiteAlignmentTestCase(TestCase):
             self.assertTrue(os.path.isfile(pairs_list_file))
             self.assertTrue(os.path.isfile(pdb_size_file))       
             self.assertTrue(os.path.isfile(align_output_file))
-e
+
             with open(pairs_list_file, 'r') as f:
                 self.assertNotEqual(f.read(), '')
             with open(pdb_size_file, 'r') as f:
