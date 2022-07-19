@@ -752,7 +752,7 @@ def MainCode(aline, bline):
             pair_str = res_pair[0].replace(' ', '_')
             res_pairings += pair_str + ' '
     logging.debug("finishing MainCode()")
-    return MAPP_scores + "\t" + res_pairings + "\t" +  str(rmsd)
+    return MAPP_scores + "\t" +  str(rmsd) + "\t" + res_pairings
 
 # MPI CODE START
 
