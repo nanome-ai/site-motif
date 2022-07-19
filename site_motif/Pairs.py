@@ -3,9 +3,10 @@ import sys
 
 __all__ = ['write_pairs']
 
+
 def write_pairs(site_dir: str, output_dir: str, reference_pdb=''):
     """Writes a file enumerating all pairs of pdb files to check.
-    
+
     If reference pdb provided, only write pairs comparing to that pdb.
     """
     output_file = os.path.join(output_dir, 'PairList.txt')

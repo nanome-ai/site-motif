@@ -685,7 +685,7 @@ def MainCode(aline, bline):
                 pdb1_ca_dic[res1].append(line[28:38].strip())
                 pdb1_ca_dic[res1].append(line[38:46].strip())
                 pdb1_ca_dic[res1].append(line[46:54].strip())
-    
+
     for line in pdb2_lines:
         if line[:4] == "ATOM":
             res1 = line[17:20] + "-" + line[21:22] + "-" + line[22:26].strip()
@@ -742,7 +742,7 @@ def MainCode(aline, bline):
     MAPP_seqs = '_'.join([i[0] for i in line1])
     if not MAPP_seqs:
         MAPP_seqs = 'No Match'
-    
+
     # format the output
     for pairings in ResLists[0]:
         if isinstance(pairings, float):
@@ -752,7 +752,7 @@ def MainCode(aline, bline):
             pair_str = res_pair[0].replace(' ', '_')
             res_pairings += pair_str + ' '
     logging.debug("finishing MainCode()")
-    return MAPP_scores + "\t" +  str(rmsd) + "\t" + res_pairings
+    return MAPP_scores + "\t" + str(rmsd) + "\t" + res_pairings
 
 # MPI CODE START
 

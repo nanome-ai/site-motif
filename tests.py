@@ -65,7 +65,7 @@ class PDBSizeTestCase(TestCase):
                 output_lines = f.readlines()
                 output_data = [line.strip() for line in output_lines if line]
             self.assertEqual(len(output_data), len(os.listdir(sites_dir)))
-    
+
     def test_write_pdb_size_command(self):
         """Test that the command-line version of write_pdb_size works."""
         dirname = os.path.dirname(__file__)
@@ -89,13 +89,13 @@ class MultipleSiteAlignmentTestCase(TestCase):
             pdb_size_file = f'{output_dir}/PDBSize.txt'
             align_output_file = f'{output_dir}/align_output.txt'
             sites_dir = f'{dirname}/test_data/ATP_SUBSET'
-            
+
             reference_pdb = os.listdir(sites_dir)[0]
             cmd = f'{dirname}/bin/site-motif {reference_pdb} {sites_dir} {output_dir}'
             output = os.system(cmd)
             self.assertEqual(output, 0)
             self.assertTrue(os.path.isfile(pairs_list_file))
-            self.assertTrue(os.path.isfile(pdb_size_file))       
+            self.assertTrue(os.path.isfile(pdb_size_file))
             self.assertTrue(os.path.isfile(align_output_file))
 
             with open(pairs_list_file, 'r') as f:
