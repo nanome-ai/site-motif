@@ -35,8 +35,8 @@ class PairListTestCase(TestCase):
             pair_count = len([pair for pair in data.split('\n') if pair])
             self.assertEqual(pair_count, site_count ** 2)
 
-    def test_write_pairs_command_fixed_pdb(self):
-        """Test that the command line version of write_pairs works."""
+    def test_write_pairs_command_with_reference_pdb(self):
+        """Test that the command line version of write_pairs works when providing reference pdb."""
         dirname = os.path.dirname(__file__)
         sites_dir = f'{dirname}/test_data/ATP'
         reference_pdb = os.listdir(sites_dir)[0]
